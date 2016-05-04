@@ -9,11 +9,11 @@ var webpack = require('webpack');
 var config = {
     entry: {
         app: [
-            path.resolve(__dirname) + '/web/index.js'
+            path.resolve(__dirname) + '/index.js'
         ],
     },
     output: {
-        path: path.resolve(__dirname) + '/web/build',
+        path: path.resolve(__dirname) + '/build',
         publicPath: '/build/',
         filename: 'bundle.js'
     },
