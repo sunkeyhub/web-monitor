@@ -27,6 +27,10 @@ var config = {
             {
                 test: /\.scss$/,
                 loaders: ['style', 'css', 'autoprefixer', 'sass']
+            },
+            {
+                test: /\.less$/,
+                loaders: ['style', 'css', 'autoprefixer', 'less']
             }
         ]
     },

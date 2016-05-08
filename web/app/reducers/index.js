@@ -6,7 +6,7 @@
 
 import { combineReducers } from 'redux';
 
-import stat from './index/';
+import stat from './stat/';
 
 var pageReducer = combineReducers({
     stat,

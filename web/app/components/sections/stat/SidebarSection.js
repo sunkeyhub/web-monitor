@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 
 class SidebarSection extends Component {
     render() {
+        console.log(this.props);
         return (
             <section className="g-sidebar">
                 <ul className="m-menu-list">

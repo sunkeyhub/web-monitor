@@ -1,46 +1,80 @@
 @import "./common.scss";
 
 .g-body {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-
     .g-topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
         display: flex;
         flex: none;
-        height: .6rem;
-        padding: 0 .3rem;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        padding: 0 30px;
         background-color: $content-bg;
         box-shadow: 0 2px 0 0 $divider-color;
+        z-index: 100;
+
+        .g-left {
+            display: flex;
+            flex: none;
+        }
+
+        .g-right {
+            display: flex;
+            flex: none;
+            .u-select-date {
+                width: 220px;
+                height: 28px;
+            }
+
+            .u-select-page {
+                margin-right: 30px;
+                width: 220px;
+                height: 28px;
+
+                .u-select {
+                    width: 220px;
+                }
+            }
+        }
     }
 
     .g-content {
-        display: flex;
-        flex: auto;
+        position: absolute;
+        top: 50px;
+        bottom: 0;
+        left: 0;
+        right: 0;
 
         .g-sidebar {
+            position: fixed;
+            height: 100%;
             display: flex;
-            width: 2rem;
+            width: 200px;
             background-color: $primary-color;
+            z-index: 99;
 
             .m-menu-list {
                 display: flex;
                 flex: 1;
                 flex-direction: column;
-                margin-top: .3rem;
+                margin-top: 30px;
 
                 .item {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    height: .5rem;
+                    height: 50px;
 
                     a {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        width: 1.4rem;
-                        height: .4rem;
+                        width: 140px;
+                        height: 30px;
                         font-size: 16px;
                         color: #fff;
 
@@ -51,6 +85,21 @@
                         }
                     }
                 }
+            }
+        }
+
+        .g-main {
+            height: 100%;
+            margin-left: 200px;
+            background-color: $body-bg;
+            z-index: -1;
+            overflow-y: auto;
+
+            .main-wraper {
+                margin: 30px;
+                padding: 30px;
+                box-shadow: 0 0 1px 1px $divider-color;
+                background-color: $content-bg;
             }
         }
     }

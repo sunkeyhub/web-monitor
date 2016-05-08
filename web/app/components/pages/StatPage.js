@@ -5,12 +5,17 @@ import SidebarSection from '../sections/stat/SidebarSection';
 
 export default class StatPage extends Component {
     render() {
+        var minHeight = window.innerHeight - 110;
         return (
             <div className="g-body">
-                <TopbarSection />
+                <TopbarSection location={this.props.location} />
                 <div className="g-content">
-                    <SidebarSection />
-                    {this.props.children}
+                    <SidebarSection location={this.props.location}/>
+                    <div className="g-main">
+                        <div className="main-wraper" style={{minHeight: minHeight+'px'}}>
+                            {this.props.children}
+                        </div>
+                    </div>
                 </div>
             </div>
         );
