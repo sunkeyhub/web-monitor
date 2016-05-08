@@ -1,23 +1,15 @@
+/**
+ * reducer入口
+ *
+ * @author : Sunkey
+ */
+
 import { combineReducers } from 'redux';
 
-var initialState = {};
+import stat from './index/';
 
-function topbar(state=initialState, action) {
-    return state;
-}
-
-function sidebar(state=initialState, action) {
-    return state;
-}
-
-function general(state=initialState, action) {
-    return state;
-}
-
-var indexReducer = combineReducers({
-    topbar,
-    sidebar,
-    general
+var pageReducer = combineReducers({
+    stat,
 });
 
-export default indexReducer;
+export default pageReducer;

@@ -1,0 +1,57 @@
+@import "./common.scss";
+
+.g-body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    .g-topbar {
+        display: flex;
+        flex: none;
+        height: .6rem;
+        padding: 0 .3rem;
+        background-color: $content-bg;
+        box-shadow: 0 2px 0 0 $divider-color;
+    }
+
+    .g-content {
+        display: flex;
+        flex: auto;
+
+        .g-sidebar {
+            display: flex;
+            width: 2rem;
+            background-color: $primary-color;
+
+            .m-menu-list {
+                display: flex;
+                flex: 1;
+                flex-direction: column;
+                margin-top: .3rem;
+
+                .item {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: .5rem;
+
+                    a {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 1.4rem;
+                        height: .4rem;
+                        font-size: 16px;
+                        color: #fff;
+
+                        &.active {
+                            color: $primary-color;
+                            background-color: $light-primary-color;
+                            border-radius: 30px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
