@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute, Link } from 'react-router';
+import { Route, IndexRedirect, Link } from 'react-router';
 
 import App from './components/App';
 import StatPage from './components/pages/StatPage';
@@ -14,6 +14,7 @@ const routes = (
             <Route path="timing" component={TimingSection} />
             <Route path="err" component={ErrSection} />
         </Route>
+        <IndexRedirect to="/stat/overview" />
     </Route>
 );
 
