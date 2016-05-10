@@ -25,7 +25,7 @@ class SidebarSection extends Component {
 
 function mapStateToProps(state) {
     return {
-        sidebar: state.page.stat.sidebar
+        sidebar: state.stat.sidebar
     }
 }
 

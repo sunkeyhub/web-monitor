@@ -11,7 +11,7 @@ class OverviewSection extends Component {
 
 function mapStateToProps(state) {
     return {
-        overstat: state.page.stat.overview
+        overstat: state.stat.overview
     }
 }
 

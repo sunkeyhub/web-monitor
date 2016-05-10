@@ -67,7 +67,7 @@ class TimingSection extends Component {
 
 function mapStateToProps(state) {
     return {
-        timing: state.page.stat.timing
+        timing: state.stat.timing
     }
 }
 

@@ -2,13 +2,12 @@ import React from 'react';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk';
-import pageReducer from './reducers/index';
+import reducers from './reducers/index';
 
 export default function configureStore(history) {
-    const reducer = combineReducers({
-        page: pageReducer,
-        routing: routerReducer
-    });
+    var reducerObj = Object.assign({}, {routing: routerReducer}, reducers);
+
+    const state = combineReducers(reducerObj);
 
     const middlewares = [
         thunkMiddleware,
@@ -16,7 +15,7 @@ export default function configureStore(history) {
     ];
 
     const store = createStore(
-        reducer,
+        state,
         compose(
             applyMiddleware(...middlewares)
         )

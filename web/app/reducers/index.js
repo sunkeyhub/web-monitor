@@ -6,10 +6,8 @@
 
 import { combineReducers } from 'redux';
 
-import stat from './stat/';
+import stat from './stat/index';
 
-var pageReducer = combineReducers({
-    stat,
-});
-
-export default pageReducer;
+export default {
+	stat,
+};

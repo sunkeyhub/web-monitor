@@ -11,7 +11,7 @@ class ErrSection extends Component {
 
 function mapStateToProps(state) {
     return {
-        err: state.page.stat.err
+        err: state.stat.err
     }
 }
 

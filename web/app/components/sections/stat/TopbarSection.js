@@ -36,7 +36,7 @@ export default class TopbarSection extends Component {
 
 function mapStateToProps(state) {
     return {
-        overstat: state.page.stat.topbar
+        overstat: state.stat.topbar
     }
 }
 
