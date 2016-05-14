@@ -1,26 +1,12 @@
-var express = require('express');
-var app = express();
+/**
+ * APP项目入口文件
+ *
+ * @author : Sunkey
+ */
 
-app.get('/api/page/list', function(req, res) {
-    var pageList = require('./data/pages');
+// 载入全局变量
+GLB = require('./global/index');
 
-    res.header('Access-Allow-Origin', '*');
-    res.json({code: 200, data: pageList}).end();
-});
+GLB.app = require('./boot/app');
 
-app.get('/api/stat/overview', function(req, res) {
-    res.header('Access-Allow-Origin', '*');
-    res.json({code: 200, data: 'overview'}).end();
-});
-
-app.get('/api/stat/timing', function(req, res) {
-    res.header('Access-Allow-Origin', '*');
-    res.json({code: 200, data: 'timing'}).end();
-});
-
-app.get('/api/stat/err', function(req, res) {
-    res.header('Access-Allow-Origin', '*');
-    res.json({code: 200, data: 'err'}).end();
-});
-
-app.listen(8002);
+GLB.app.run();

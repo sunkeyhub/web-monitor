@@ -12,7 +12,7 @@ export default class StatPage extends Component {
                 <div className="g-content">
                     <SidebarSection location={this.props.location}/>
                     <div className="g-main">
-                        <div className="main-wraper" style={{minHeight: minHeight+'px'}}>
+                        <div className="g-container" style={{minHeight: minHeight+'px'}}>
                             {this.props.children}
                         </div>
                     </div>

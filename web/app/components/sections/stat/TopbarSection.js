@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Select, DatePicker } from 'antd';
+var moment = require('moment');
 
 const Option = Select.Option;
 const RangePicker = DatePicker.RangePicker;
 
 export default class TopbarSection extends Component {
     render() {
-        var today = new Date();
-        var defaultDate = [today, today];
+        var start = moment().subtract(7, 'day').toDate();
+        var today = moment().toDate();
+        var defaultDate = [start, today];
+        
         return (
             <header className="g-topbar">
                 <div className="g-left">

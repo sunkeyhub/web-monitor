@@ -95,11 +95,114 @@
             z-index: -1;
             overflow-y: auto;
 
-            .main-wraper {
+            .g-container {
                 margin: 30px;
-                padding: 30px;
+                padding: 0 30px;
+                padding-bottom: 30px;
                 box-shadow: 0 0 1px 1px $divider-color;
                 background-color: $content-bg;
+
+                .m-section {
+                    .title {
+                        font-size: 16px;
+                        font-weight: 600;
+                        height: 50px;
+                        line-height: 50px;
+                        border-bottom: 1px solid $divider-color;
+                        color: $primary-text;
+                    } 
+
+                    .content {
+                        margin-top: 10px;
+
+                        .m-subsection {
+                            margin-top: 10px;
+
+                            .title {
+                                height: 30px;
+                                line-height: 30px;
+                                font-size: 14px;
+                                color: $secondary-text;
+                                font-weight: 400;
+                                border-bottom: 1px dashed $divider-color;
+                                padding-left: 10px;
+                            }
+
+                            .content {
+                                height: 300px; 
+                                background-color: $light-primary-color;
+                            }
+                        }
+                    }
+                }
+
+                .m-section-visit {
+                    .content {
+                        display: flex;
+                        justify-content: space-between;
+                        height: 120px;
+
+                        .box {
+                            display: flex;
+                            align-items: center;
+                            padding: 10px;
+                            width: 200px;
+                            height: 120px;
+                            background-color: $light-primary-color;
+
+                            .icon {
+                                padding: 0 25px 0 15px; 
+                                i {
+                                    font-size: 50px;
+                                }
+                            }
+
+                            .data {
+                                display: flex;
+                                flex: auto;
+                                flex-direction: column;
+                                font-size: 14px;
+
+                                .label {
+                                    text-align: center;
+                                } 
+
+                                .line {
+                                    text-align: center;
+                                    margin: 10px 0;
+                                    height: 2px;
+                                    background-color: $divider-color;
+                                }
+
+                                .number {
+                                    text-align: center;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .m-section-timing {
+                    margin-top: 30px;
+
+                    .m-subsection {
+                        .content {
+                            .m-chart {
+                                width: 100%;
+                                height: 100%;
+
+                                .u-chart {
+                                    width: 100%;
+                                    height: 100%;
+                                }
+                            }
+                        } 
+                    } 
+                }
+
+                .m-section-err {
+                    margin-top: 30px;
+                }
             }
         }
     }
