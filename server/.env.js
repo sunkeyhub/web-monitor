@@ -19,7 +19,7 @@ module.exports = {
     /* redis默认配置 */
     REDIS_HOST: '127.0.0.1',
     REDIS_PORT: 6379,
-    REDIS_PASSWORD: '123456',
+    REDIS_PASSWORD: '1234',
 
     /* 邮件默认配置 */
     MAIL_DRIVER: 'smtp',
