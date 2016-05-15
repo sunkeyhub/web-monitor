@@ -67,9 +67,9 @@ var reportApiErrorSchema = new Schema({
         },        
     },
     divice: {
-        name: {
+        family: {
             type: String,
-            default: '',
+            default: 'Other',
         },
         width: {
             type: Number,

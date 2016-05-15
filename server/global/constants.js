@@ -21,3 +21,6 @@ exports.MODEL_PATH = rootPath + '/app/Models';
 
 // 助手路径
 exports.HELPER_PATH = rootPath + '/app/Helpers';
+
+// 组件路径
+exports.COMPONENT_PATH = rootPath + '/app/Components';

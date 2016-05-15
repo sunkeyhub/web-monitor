@@ -3,8 +3,12 @@
  *
  * @author : Sunkey
  */
+
+var express = require('express');
+var _ = require('lodash');
+var requestIp = require('request-ip');
+
 function App() {
-    var express = require('express');
     var app = express();
 
     var self = this;
@@ -15,6 +19,13 @@ function App() {
 
     // 初始化标记
     var inited = false; 
+
+    /**
+     * 初始化中间件
+     */
+    function initMiddlewares() {
+        app.use(requestIp.mw());
+    }
 
     /**
      * 初始化日志
@@ -107,20 +118,33 @@ function App() {
                                 res.status(404).end('Controller not exists.');
                             } else {
                                 var controller = require(controllerPath);
+                                if (!_.isFunction(controller.init)) {
+                                    return res.end('route init error');
+                                }
 
                                 controller.init(req, res, next);
-                                controller.before && controller.before();
-                                typeof controller[methodName] === 'function' ?
-                                    controller[methodName]() :
-                                    res.status(404).end('Method not exists.');
-                                controller.after && controller.after();
+
+                                if (_.isFunction(controller.before)) {
+                                    var beforeRt = controller.before(); 
+                                    // 如果返回的不是undefined, 则说明提前终止了请求
+                                    if (!_.isUndefined(beforeRt)) {
+                                        return beforeRt;
+                                    }
+                                }
+
+                                if (_.isFunction(controller[methodName])) {
+                                    var methodRt = controller[methodName]();
+                                    // 如果返回的不是undefined, 则说明提前终止了请求
+                                    if (!_.isUndefined(methodRt)) {
+                                        return methodRt;
+                                    }
+                                }
                             }
                         });
                     });
                 })(groupName, path, route);
             });
         });
-
     }
 
     /**
@@ -131,6 +155,7 @@ function App() {
             return false;
         }
 
+        initMiddlewares();
         initLog();
         initDatabase();
         initCache();

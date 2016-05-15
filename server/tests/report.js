@@ -69,6 +69,7 @@ describe('JsMeta', function() {
                 sid: genGuidV4(),
                 uid: genGuidV4(),
                 device: {
+                    family: '小米4',
                     width: 640,
                     height: 1080,
                 },
@@ -114,7 +115,7 @@ describe('JsMeta', function() {
             },
         };
 
-        var query = 'q=' + JSON.stringify(data);
+        var query = 'q=' + encodeURIComponent(JSON.stringify(data));
         var url = api + '?' + query;
 
         request.get(url, function(err, response, body) {
@@ -146,6 +147,7 @@ describe('JsError', function() {
                 sid: genGuidV4(),
                 uid: genGuidV4(),
                 device: {
+                    family: '小米5',
                     width: 640,
                     height: 1080,
                 },
@@ -171,7 +173,7 @@ describe('JsError', function() {
             },
         };
 
-        var query = 'q=' + JSON.stringify(data);
+        var query = 'q=' + encodeURIComponent(JSON.stringify(data));
         var url = api + '?' + query;
 
         request.get(url, function(err, response, body) {
@@ -203,6 +205,7 @@ describe('ApiError', function() {
                 sid: genGuidV4(),
                 uid: genGuidV4(),
                 device: {
+                    family: '小米4',
                     width: 640,
                     height: 1080,
                 },
@@ -228,7 +231,7 @@ describe('ApiError', function() {
             },
         };
 
-        var query = 'q=' + JSON.stringify(data);
+        var query = 'q=' + encodeURIComponent(JSON.stringify(data));
         var url = api + '?' + query;
 
         request.get(url, function(err, response, body) {

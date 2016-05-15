@@ -66,18 +66,18 @@ var reportJsMetaSchema = new Schema({
             default: '0',
         },        
     },
-    divice: {
-        name: {
+    device: {
+        family: {
             type: String,
-            default: '',
+            default: 'Other',
         },
         width: {
             type: Number,
-            default: 0,
+            requred: true,
         },
         height: {
             type: Number,
-            default: 0,
+            required: true,
         },
     },
     ip: {

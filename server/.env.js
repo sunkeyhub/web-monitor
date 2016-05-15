@@ -5,7 +5,7 @@
  */
 module.exports = {
     /* App默认配置 */
-    APP_HOST: '127.0.0.1',
+    APP_HOST: '192.168.1.100',
     APP_PORT: 8002,
 
     /* 数据库默认配置 */

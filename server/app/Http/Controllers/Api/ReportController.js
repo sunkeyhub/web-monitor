@@ -4,15 +4,14 @@
  * @author : Sunkey
  */
 
-var util = require('util');
 var co = require('co');
 var _ = require('lodash');
 var useragent = require('useragent');
-var requestIp = require('request-ip');
-var Controller = require('../Controller');
 
 function ReportController() {
-    Controller.call(this);
+    // 构造器借用
+    var BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
+    BaseController.call(this);
 
     var self = this;
 
@@ -28,28 +27,28 @@ function ReportController() {
         var query = this.request.query.q;
         if (!query) {
             GLB.app.logger.error('缺少上报参数 | ' + self.request.url);
-            this.response.jsonp({code: 400, msg: '缺少上报参数q'}).end();
-        }
+            return this.response.jsonp({code: 400, msg: '缺少上报参数q'});
+        } else {
+            try {
+                var queryJson = JSON.parse(query);
 
-        try {
-            var queryJson = JSON.parse(query);
+                if (queryJson.option && queryJson.data) {
+                    this.serviceOption = queryJson.option;
+                    this.serviceData = queryJson.data;
 
-            if (queryJson.option && queryJson.data) {
-                this.serviceOption = queryJson.option;
-                this.serviceData = queryJson.data;
+                    if (!reportIdMap.page[this.serviceData.page_id]) {
+                        return self.response.jsonp({code: 400, msg: 'page_id 不存在'});
+                    }
 
-                if (!reportIdMap.page[this.serviceData.page_id]) {
-                    self.response.jsonp({code: 400, msg: 'page_id 不存在'}).end();
+                } else {
+                    GLB.app.logger.error('上报参数不全 | 缺少option/data | ' + query);
+                    return this.response.jsonp({code: 400, msg: '上报参数不全 | 缺少option/data'});
                 }
-
-            } else {
-                GLB.app.logger.error('上报参数不全 | 缺少option/data | ' + query);
-                this.response.jsonp({code: 400, msg: '上报参数不全 | 缺少option/data'}).end();
+            } catch(e) {
+                GLB.app.logger.error('上报参数非法 | JSON.parse | ' + e.message);
+                return this.response.jsonp({code: 400, msg: '上报参数非法 | ' + e.message});
             }
-        } catch(e) {
-            GLB.app.logger.error('上报参数非法 | JSON.parse | ' + e.message);
-            this.response.jsonp({code: 400, msg: '上报参数非法 | ' + e.message}).end();
-        } 
+        }
     };
 
     /**
@@ -59,17 +58,13 @@ function ReportController() {
     this.index = function() {
         switch (this.serviceOption.service_id) {
             case 1001:          // 元数据上报服务
-                jsMetaService(this.serviceData);
-                break;
+                return jsMetaService(this.serviceData);
             case 1002:          // 元数据上报服务
-                jsErrorService(this.serviceData);
-                break;
+                return jsErrorService(this.serviceData);
             case 1003:          // js错误上报服务
-                apiErrorService(this.serviceData);
-                break;
+                return apiErrorService(this.serviceData);
             default:
-                this.response.status(404).end('服务不存在');
-                break;
+                return this.response.status(404).end('服务不存在');
         }
     };
 
@@ -81,18 +76,19 @@ function ReportController() {
     function jsMetaService(data) {
         // 校验时间数据的有效性
         if (!checkTimingValid(data)) {
-            self.response.jsonp({code: 400, msg: 'timing数据无效'}).end();
+            return self.response.jsonp({code: 400, msg: 'timing数据无效'});
         }
 
         // 处理数据
         data = processData(data);
+
         co(function *() {
             try {
                 yield reportJsMetaModel.create(data);
-                self.response.jsonp({code: 200});
+                return self.response.jsonp({code: 200});
             } catch(e) {
                 GLB.app.logger.error(e.message + ' | ' + JSON.stringify(e.errors));
-                self.response.jsonp({code: 400, msg: e.message + ' | ' + JSON.stringify(e.errors)}).end();
+                return self.response.jsonp({code: 400, msg: e.message + ' | ' + JSON.stringify(e.errors)});
             }
         });
     };
@@ -195,12 +191,10 @@ function ReportController() {
             minor: ua.monor,
         };
 
-        data.ip = requestIp.getClientIp(self.request);
+        data.ip = self.request.clientIp;
 
         return data;
     }
 }
-
-util.inherits(ReportController, Controller);
 
 module.exports = new ReportController();
