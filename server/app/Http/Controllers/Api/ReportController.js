@@ -9,44 +9,48 @@ var _ = require('lodash');
 var useragent = require('useragent');
 
 function ReportController() {
+    var pub = this;
+    var pri = {};
+
+    // ms
+    pri.timingLimit = 100000;
+
     // 构造器借用
-    var BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
-    BaseController.call(this);
+    pri.BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
+    pri.BaseController.call(this);
 
-    var self = this;
+    pri.reportIdMap = require(GLB.CONS.ROOT_PATH + '/app/Data/ReportIdMap');
+    pri.reportJsMetaModel = require(GLB.CONS.MODEL_PATH + '/ReportJsMetaModel');
+    pri.reportJsErrorModel = require(GLB.CONS.MODEL_PATH + '/ReportJsErrorModel');
+    pri.reportApiErrorModel = require(GLB.CONS.MODEL_PATH + '/ReportApiErrorModel');
 
-    var reportIdMap = require(GLB.CONS.ROOT_PATH + '/app/Data/ReportIdMap');
-    var reportJsMetaModel = require(GLB.CONS.MODEL_PATH + '/ReportJsMetaModel');
-    var reportJsErrorModel = require(GLB.CONS.MODEL_PATH + '/ReportJsErrorModel');
-    var reportApiErrorModel = require(GLB.CONS.MODEL_PATH + '/ReportApiErrorModel');
+    pri.serviceOption = null;
+    pri.serviceData = null;
 
-    this.serviceOption = null;
-    this.serviceData = null;
-
-    this.before = function() {
-        var query = this.request.query.q;
+    pub.before = function before() {
+        var query = pub.request.query.q;
         if (!query) {
-            GLB.app.logger.error('缺少上报参数 | ' + self.request.url);
-            return this.response.jsonp({code: 400, msg: '缺少上报参数q'});
+            GLB.app.logger.error('缺少上报参数q | ' + self.request.url);
+            return pub.response.jsonp({code: 400, msg: '缺少上报参数q'});
         } else {
             try {
                 var queryJson = JSON.parse(query);
-
-                if (queryJson.option && queryJson.data) {
-                    this.serviceOption = queryJson.option;
-                    this.serviceData = queryJson.data;
-
-                    if (!reportIdMap.page[this.serviceData.page_id]) {
-                        return self.response.jsonp({code: 400, msg: 'page_id 不存在'});
-                    }
-
-                } else {
-                    GLB.app.logger.error('上报参数不全 | 缺少option/data | ' + query);
-                    return this.response.jsonp({code: 400, msg: '上报参数不全 | 缺少option/data'});
-                }
             } catch(e) {
                 GLB.app.logger.error('上报参数非法 | JSON.parse | ' + e.message);
-                return this.response.jsonp({code: 400, msg: '上报参数非法 | ' + e.message});
+                return pub.response.jsonp({code: 400, msg: '上报参数非法 | ' + e.message});
+            }
+
+            if (queryJson.option && queryJson.data) {
+                pri.serviceOption = queryJson.option;
+                pri.serviceData = queryJson.data;
+
+                if (!pri.reportIdMap.page[pri.serviceData.page_id]) {
+                    return pub.response.jsonp({code: 400, msg: 'page_id 不存在'});
+                }
+
+            } else {
+                GLB.app.logger.error('上报参数不全 | 缺少option/data | ' + query);
+                return pub.response.jsonp({code: 400, msg: '上报参数不全 | 缺少option/data'});
             }
         }
     };
@@ -55,14 +59,14 @@ function ReportController() {
      * 数据上报接口
      * @return Json
      */
-    this.index = function() {
-        switch (this.serviceOption.service_id) {
+    pub.index = function index() {
+        switch (pri.serviceOption.service_id) {
             case 1001:          // 元数据上报服务
-                return jsMetaService(this.serviceData);
+                return pri.jsMetaService();
             case 1002:          // 元数据上报服务
-                return jsErrorService(this.serviceData);
+                return pri.jsErrorService();
             case 1003:          // js错误上报服务
-                return apiErrorService(this.serviceData);
+                return pri.apiErrorService();
             default:
                 return this.response.status(404).end('服务不存在');
         }
@@ -73,22 +77,22 @@ function ReportController() {
      * @param Object 
      * @return Json
      */
-    function jsMetaService(data) {
+    pri.jsMetaService = function jsMetaService() {
         // 校验时间数据的有效性
-        if (!checkTimingValid(data)) {
-            return self.response.jsonp({code: 400, msg: 'timing数据无效'});
+        if (!pri.checkTimingValid(pri.serviceData)) {
+            return pub.response.jsonp({code: 400, msg: 'timing数据无效'});
         }
 
         // 处理数据
-        data = processData(data);
+        pri.processCommonData(pri.processJsMetaData)();
 
-        co(function *() {
+        return co(function *() {
             try {
-                yield reportJsMetaModel.create(data);
-                return self.response.jsonp({code: 200});
+                yield pri.reportJsMetaModel.create(pri.serviceData);
+                return pub.response.jsonp({code: 200});
             } catch(e) {
                 GLB.app.logger.error(e.message + ' | ' + JSON.stringify(e.errors));
-                return self.response.jsonp({code: 400, msg: e.message + ' | ' + JSON.stringify(e.errors)});
+                return pub.response.jsonp({code: 400, msg: e.message + ' | ' + JSON.stringify(e.errors)});
             }
         });
     };
@@ -97,28 +101,50 @@ function ReportController() {
      * js报错上报服务
      * @return Json
      */
-    function jsErrorService(data) {
+    pri.jsErrorService = function jsErrorService() {
+        // 处理数据
+        pri.processCommonData(pri.processJsErrorData)();
 
+        return co(function *() {
+            try {
+                yield pri.reportJsErrorModel.create(pri.serviceData);
+                return pub.response.jsonp({code: 200});
+            } catch(e) {
+                GLB.app.logger.error(e.message + ' | ' + JSON.stringify(e.errors));
+                return pub.response.jsonp({code: 400, msg: e.message + ' | ' + JSON.stringify(e.errors)});
+            }
+        });
     };
 
     /**
      * api报错上报服务
      * @return Json
      */
-    function apiErrorService(data) {
+    pri.apiErrorService = function apiErrorService() {
+        // 处理数据
+        pri.processCommonData(pri.processApiErrorData)();
 
+        return co(function *() {
+            try {
+                yield pri.reportApiErrorModel.create(pri.serviceData);
+                return pub.response.jsonp({code: 200});
+            } catch(e) {
+                GLB.app.logger.error(e.message + ' | ' + JSON.stringify(e.errors));
+                return pub.response.jsonp({code: 400, msg: e.message + ' | ' + JSON.stringify(e.errors)});
+            }
+        });
     };
 
     // 检测时间有效性
-    function checkTimingValid(data, timingLimit=10000) {
-        if (!data.performance
-        || !data.performance.timing
-        || !data.timing_human) {
+    pri.checkTimingValid = function checkTimingValid() {
+        if (!pri.serviceData.performance
+        || !pri.serviceData.performance.timing
+        || !pri.serviceData.timing_human) {
             return false;
         }
 
-        var performance = data.performance;
-        var timingHuman = data.timing_human;
+        var performance = pri.serviceData.performance;
+        var timingHuman = pri.serviceData.timing_human;
 
         var cache = performance.timing.domainLookupStart - performance.timing.fetchStart || 0;
         var dns = performance.timing.domainLookupEnd - performance.timing.domainLookupStart || 0;
@@ -138,62 +164,82 @@ function ReportController() {
         var windowOnload = +timingHuman.window_onload || 0;
         var humanTotal = +timingHuman.total || 0;
 
-        if (cache < 0 || cache > timingLimit
-        || dns < 0 || dns > timingLimit
-        || tcp < 0 || tcp > timingLimit
-        || request < 0 || request > timingLimit
-        || response < 0 || response > timingLimit
-        || domParse < 0 || domParse > timingLimit
-        || script < 0 || script > timingLimit
-        || domReady < 0 || domReady > timingLimit
-        || resource < 0 || resource > timingLimit
-        || onload < 0 || onload > timingLimit
-        || total < 0 || total > timingLimit
-        || whiteScreen < 0 || whiteScreen > timingLimit
-        || firstScreen < 0 || firstScreen > timingLimit
-        || domReady < 0 || domReady > timingLimit
-        || windowOnload < 0 || windowOnload > timingLimit
-        || humanTotal < 0 || humanTotal > timingLimit) {
+        if (cache < 0 || cache > pri.timingLimit
+        || dns < 0 || dns > pri.timingLimit
+        || tcp < 0 || tcp > pri.timingLimit
+        || request < 0 || request > pri.timingLimit
+        || response < 0 || response > pri.timingLimit
+        || domParse < 0 || domParse > pri.timingLimit
+        || script < 0 || script > pri.timingLimit
+        || domReady < 0 || domReady > pri.timingLimit
+        || resource < 0 || resource > pri.timingLimit
+        || onload < 0 || onload > pri.timingLimit
+        || total < 0 || total > pri.timingLimit
+        || whiteScreen < 0 || whiteScreen > pri.timingLimit
+        || firstScreen < 0 || firstScreen > pri.timingLimit
+        || domReady < 0 || domReady > pri.timingLimit
+        || windowOnload < 0 || windowOnload > pri.timingLimit
+        || humanTotal < 0 || humanTotal > pri.timingLimit) {
             return false;
         }
 
         return true;
     }
 
-
     /**
-     * 处理数据
-     * @param  Object data 原始数据
+     * 处理公共参数(科里化)
+     * @param  Function cb 回调
      * @return Object
      */
-    function processData(data) {
-        data.channel = {
-            id: data.channel_id,
-            name: reportIdMap.channel[data.channel_id].name,
-            version: data.channel_version,
+    pri.processCommonData = function processCommonData(cb) {
+        pri.serviceData.channel = {
+            id: pri.serviceData.channel_id,
+            name: pri.reportIdMap.channel[pri.serviceData.channel_id].name,
+            version: pri.serviceData.channel_version,
         };
 
-        data.page = {
-            id: data.page_id,
-            name: reportIdMap.page[data.page_id].name,
-            url: data.page_url,
-        };
-
-        var ua = useragent.parse(data.user_agent);
-        data.os = {
+        var ua = useragent.parse(pri.serviceData.user_agent);
+        pri.serviceData.os = {
             family: ua.os.family,
             major: ua.os.major,
             minor: ua.os.minor,
         };
-        data.browser = {
+        pri.serviceData.browser = {
             family: ua.family,
             major: ua.major,
             minor: ua.monor,
         };
 
-        data.ip = self.request.clientIp;
+        pri.serviceData.ip = pub.request.clientIp;
 
-        return data;
+        return cb;
+    }
+
+    /**
+     * 处理Js上报元数据(科里化)
+     * @param Function cb 回调
+     * @return Function
+     */
+    pri.processJsMetaData = function processJsMetaData(cb) {
+        return cb;
+    }
+
+    /**
+     * 处理Js报错数据(科里化)
+     * @param Function cb 回调
+     * @return Function
+     */
+    pri.processJsErrorData = function processJsErrorData(cb) {
+        return cb;
+    }
+
+    /**
+     * 处理Api上报数据(科里化)
+     * @param Function cb 回调
+     * @return Function
+     */
+    pri.processApiErrorData = function processApiErrorData(cb) {
+        return cb;
     }
 }
 

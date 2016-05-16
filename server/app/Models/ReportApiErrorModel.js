@@ -16,6 +16,10 @@ var reportApiErrorSchema = new Schema({
         type: String,
         required: true,
     },
+    page_id: {
+        type: Number,
+        required: true,
+    },
     user_agent: {
         type: String,
         required: true,
@@ -109,21 +113,7 @@ var reportApiErrorSchema = new Schema({
             default: 'Other',
         }
     },
-    page: {
-        id: {
-            type: Number,
-            required: true,
-        },
-        name: {
-            type: String,
-            required: true,
-        },
-        url: {
-            type: String,
-            required: true,
-        }
-    },
-    message: {
+    msg: {
         type: String,
         required: true,
     },
@@ -141,24 +131,24 @@ var reportApiErrorSchema = new Schema({
             default: 0,
         }
     },
-    stack: {
-        type: [],
-        default: [],
-    },
     api: {
-        url: {
+        request_url: {
             type: String,
             required: true,
         },
-        param: {
+        request_method: {
             type: String,
+            required: true,
+        },
+        request_body: {
+            type: String, 
             default: '',
         },
         status_code: {
             type: Number,
             required: true,
         },
-        response: {
+        response_body: {
             type: String,
             default: '',
         },

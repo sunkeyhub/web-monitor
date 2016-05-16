@@ -6,24 +6,23 @@
 
 var express = require('express');
 var _ = require('lodash');
+var co = require('co');
 var requestIp = require('request-ip');
 
 function App() {
-    // 私有对象
-    var pri = {};
-    // 共有对象
     var pub = this;
+    var pri = {};
 
     // app对象
     pri.app = express();
     // 初始化标记
     pri.inited = false;
     // 日志对象
-    pri.logger = null; 
+    pub.logger = null; 
     // db对象
-    pri.db = null;
+    pub.db = null;
     // 缓存对象
-    pri.cache = null;
+    pub.cache = null;
 
     /**
      * 初始化中间件
@@ -100,12 +99,12 @@ function App() {
         var routes = require(GLB.CONS.ROOT_PATH + '/app/Http/routes');
         var fs = require('fs');
 
-        routes.forEach(function(group) {
-            group.list.forEach(function(route) {
+        _.each(routes, function(group) {
+            _.each(group.list, function(route) {
                 var path = group.path + route.path;
                 var groupName = group.name;
 
-
+                // 避免循环闭包引用问题
                 (function(groupName, path, route) {
                     var method = route.method.toLowerCase();
 
@@ -121,40 +120,51 @@ function App() {
 
                         fs.exists(controllerPath + '.js', function(exists) {
                             if (!exists) {
-                                res.status(404).end('Controller not exists.');
+                                return res.status(404).end('Controller not exists.');
                             } else {
                                 var controller = require(controllerPath);
                                 if (!_.isFunction(controller.init)) {
                                     return res.end('route init error');
                                 }
 
-                                controller.init(req, res, next);
+                                return co(function *() {
+                                    controller.init(req, res, next);
 
-                                if (_.isFunction(controller.before)) {
-                                    var beforeRt = controller.before(); 
-                                    // 如果返回的不是undefined, 则说明提前终止了请求
-                                    if (!_.isUndefined(beforeRt)) {
-                                        return beforeRt;
+                                    if (_.isFunction(controller.before)) {
+                                        var beforeRt = controller.before(); 
+                                        if (beforeRt instanceof Promise) {
+                                            beforeRt = yield beforeRt; 
+                                        }
+                                        // 如果返回的不是undefined, 则说明提前终止了请求
+                                        if (!_.isUndefined(beforeRt)) {
+                                            return beforeRt;
+                                        }
                                     }
-                                }
 
-                                if (_.isFunction(controller[methodName])) {
-                                    var methodRt = controller[methodName]();
-                                    // 如果返回的不是undefined, 则说明提前终止了请求
-                                    if (!_.isUndefined(methodRt)) {
-                                        return methodRt;
+                                    if (_.isFunction(controller[methodName])) {
+                                        var methodRt = controller[methodName]();
+                                        if (methodRt instanceof Promise) {
+                                            methodRt = yield methodRt;
+                                        }
+                                        // 如果返回的不是undefined, 则说明提前终止了请求
+                                        if (!_.isUndefined(methodRt)) {
+                                            return methodRt;
+                                        }
                                     }
-                                }
 
-                                if (_.isFunction(controller.after)) {
-                                    var afterRt = controller.after();
-                                    // 如果返回的不是undefined, 则说明提前终止了请求
-                                    if (!_.isUndefined(afterRt)) {
-                                        return afterRt;
+                                    if (_.isFunction(controller.after)) {
+                                        var afterRt = yield controller.after();
+                                        if (afterRt instanceof Promise) {
+                                            afterRt = yield afterRt; 
+                                        }
+                                        // 如果返回的不是undefined, 则说明提前终止了请求
+                                        if (!_.isUndefined(afterRt)) {
+                                            return afterRt;
+                                        }
                                     }
-                                }
 
-                                res.end('end');
+                                    res.end();
+                                });
                             }
                         });
                     });
@@ -167,7 +177,7 @@ function App() {
      * 初始化应用
      */
     pri.init = function init() {
-        if (pri.inited) {
+        if (!!pri.inited) {
             return false;
         }
 

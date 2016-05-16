@@ -16,6 +16,10 @@ var reportJsMetaSchema = new Schema({
         type: String,
         required: true,
     },
+    page_id: {
+        type: Number,
+        required: true,
+    },
     user_agent: {
         type: String,
         required: true,
@@ -107,20 +111,6 @@ var reportJsMetaSchema = new Schema({
         isp: {
             type: String,
             default: 'Other',
-        }
-    },
-    page: {
-        id: {
-            type: Number,
-            required: true,
-        },
-        name: {
-            type: String,
-            required: true,
-        },
-        url: {
-            type: String,
-            required: true,
         }
     },
     performance: {
