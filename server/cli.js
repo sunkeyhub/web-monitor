@@ -5,7 +5,7 @@
  */
 
 // 载入全局变量
-GLB.require('./global/index');
+GLB = require('./global/index');
 
 GLB.cli = require('./boot/cli');
 
