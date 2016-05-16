@@ -9,40 +9,46 @@ var _ = require('lodash');
 var requestIp = require('request-ip');
 
 function App() {
-    var app = express();
+    // 私有对象
+    var pri = {};
+    // 共有对象
+    var pub = this;
 
-    var self = this;
-
-    this.logger = null; 
-    this.db = null;
-    this.cache = null;
-
+    // app对象
+    pri.app = express();
     // 初始化标记
-    var inited = false; 
+    pri.inited = false;
+    // 日志对象
+    pri.logger = null; 
+    // db对象
+    pri.db = null;
+    // 缓存对象
+    pri.cache = null;
 
     /**
      * 初始化中间件
      */
-    function initMiddlewares() {
-        app.use(requestIp.mw());
+    pri.initMiddleware = function initMiddleware() {
+        // ip 中间件，为 request 注入 clientIp 变量
+        pri.app.use(requestIp.mw());
     }
 
     /**
      * 初始化日志
      */
-    function initLog() {
+    pri.initLog = function initLog() {
         var log4js = require('log4js');
         var logConfig = require(GLB.CONS.CONFIG_PATH + '/log');
 
         log4js.configure(logConfig);
 
-        self.logger = log4js.getLogger(logConfig.appenders[0].category);
+        pub.logger = log4js.getLogger(logConfig.appenders[0].category);
     }
 
     /**
      * 初始化数据库
      */
-    function initDatabase() {
+    pri.initDatabase = function initDatabase() {
         var mongoose = require('mongoose');
         var dbConfig = require(GLB.CONS.CONFIG_PATH + '/database');
         var mongoConfig = dbConfig['connections']['mongo'];
@@ -58,21 +64,21 @@ function App() {
 
         mongoose.connect(dsn, options);
 
-        self.db = mongoose.connection;
+        pub.db = mongoose.connection;
 
-        self.db.on('connected', function() {
+        pub.db.on('connected', function() {
             console.log('success connected to ' + dsn);
         });
 
-        self.db.on('disconnected', function() {
+        pub.db.on('disconnected', function() {
             console.log('disconnected to ' + dsn);
         });
 
-        self.db.on('reconnected', function() {
+        pub.db.on('reconnected', function() {
             console.log('reconnected to ' + dsn);
         });
 
-        self.db.on('error', function() {
+        pub.db.on('error', function() {
             console.log('error connected to ' + dsn);
         })
     }
@@ -80,17 +86,17 @@ function App() {
     /**
      * 初始化缓存
      */
-    function initCache() {
+    pri.initCache = function initCache() {
         var cacheConfig = require(GLB.CONS.CONFIG_PATH + '/cache');
         var cache = null;
 
-        self.cache = cache;
+        pub.cache = cache;
     }
 
     /**
      * 初始化路由
      */
-    function initRoutes() {
+    pri.initRoute = function initRoute() {
         var routes = require(GLB.CONS.ROOT_PATH + '/app/Http/routes');
         var fs = require('fs');
 
@@ -103,7 +109,7 @@ function App() {
                 (function(groupName, path, route) {
                     var method = route.method.toLowerCase();
 
-                    app[method](path, function(req, res, next) {
+                    pri.app[method](path, function(req, res, next) {
                         var routeParam = route.route.split('@');
                         var controllerName = routeParam[0];
                         var methodName = routeParam[1];
@@ -139,6 +145,16 @@ function App() {
                                         return methodRt;
                                     }
                                 }
+
+                                if (_.isFunction(controller.after)) {
+                                    var afterRt = controller.after();
+                                    // 如果返回的不是undefined, 则说明提前终止了请求
+                                    if (!_.isUndefined(afterRt)) {
+                                        return afterRt;
+                                    }
+                                }
+
+                                res.end('end');
                             }
                         });
                     });
@@ -150,25 +166,30 @@ function App() {
     /**
      * 初始化应用
      */
-    function init() {
-        if (inited) {
+    pri.init = function init() {
+        if (pri.inited) {
             return false;
         }
 
-        initMiddlewares();
-        initLog();
-        initDatabase();
-        initCache();
-        initRoutes();
+        pri.initMiddleware();
+        pri.initLog();
+        pri.initDatabase();
+        pri.initCache();
+        pri.initRoute();
+
+        pri.inited = true;
     }
 
-    this.run = function() {
+    /**
+     * APP运行接口
+     */
+    pub.run = function run() {
         var appConfig = require(GLB.CONS.CONFIG_PATH + '/app');
 
         // 初始化
-        init();
+        pri.init();
 
-        app.listen(appConfig.port);
+        pri.app.listen(appConfig.port);
 
         console.log('Server listen on ' + appConfig.port);
     }
