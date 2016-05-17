@@ -132,7 +132,7 @@ var statJsMetaSchema = new Schema({
     }],
     network_phase: [{
         name: {
-            type: Number,
+            type: String,
             required: true,
         },
         qty: {
@@ -154,7 +154,7 @@ var statJsMetaSchema = new Schema({
     }],
     network_isp: [{
         name: {
-            type: Number,
+            type: String,
             required: true,
         },
         qty: {

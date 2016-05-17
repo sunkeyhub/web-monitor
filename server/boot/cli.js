@@ -7,7 +7,6 @@
 var express = require('express');
 var _ = require('lodash');
 var co = require('co');
-var requestIp = require('request-ip');
 
 function App() {
     var pub = this;
@@ -28,8 +27,6 @@ function App() {
      * 初始化中间件
      */
     pri.initMiddleware = function initMiddleware() {
-        // ip 中间件，为 request 注入 clientIp 变量
-        pri.app.use(requestIp.mw());
     }
 
     /**
@@ -93,14 +90,6 @@ function App() {
     }
 
     /**
-     * 初始化任务
-     */
-    pri.initJob = function initJob() {
-        var report = require(GLB.CONS.ROOT_PATH + '/app/Jobs/Report');
-        report.run('2016-05-10', '2016-06-01');
-    }
-
-    /**
      * 初始化应用
      */
     pri.init = function init() {
@@ -112,7 +101,6 @@ function App() {
         pri.initLog();
         pri.initDatabase();
         pri.initCache();
-        pri.initJob();
 
         pri.inited = true;
     }
@@ -123,6 +111,18 @@ function App() {
     pub.run = function run() {
         // 初始化
         pri.init();
+
+        var jobConfig = require(GLB.CONS.ROOT_PATH + '/app/Cli/jobs');
+        var jobName = process.argv[2];
+
+        if (!jobName || !jobConfig[jobName]) {
+            console.log('未定义任务！');
+            process.exit(1);
+        }
+
+        var job = require(GLB.CONS.JOB_PATH + '/' + jobName);
+
+        job.run(process.argv.slice(3));
     }
 }
 

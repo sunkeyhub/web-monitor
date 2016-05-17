@@ -1,5 +1,5 @@
 /**
- * 统计数据工作
+ * 统计数据任务
  *
  * @author : Sunkey
  */
@@ -219,6 +219,7 @@ function Report() {
                         $project: {
                             _id: 0,
                             page_id: '$_id.page_id',
+                            qty: 1,
                             timing_human: {
                                 white_screen: '$timing_human-white_screen',
                                 first_screen: '$timing_human-first_screen',
@@ -259,14 +260,16 @@ function Report() {
                         var docs = yield pri.reportJsMetaModel.aggregate(pipeline).exec();
                         var result = {};
                         _.forEach(docs, function(item) {
+                            var pageId = item.page_id;
+                            delete item.page_id;
                             if (_.isArray(factor)) {
-                                if (_.isUndefined(result[item.page_id])) {
-                                    result[item.page_id] = {};
-                                    result[item.page_id][key] = [];
+                                if (_.isUndefined(result[pageId])) {
+                                    result[pageId] = {};
+                                    result[pageId][key] = [];
                                 }
-                                result[item.page_id][key].push(item);
+                                result[pageId][key].push(item);
                             } else {
-                                result[item.page_id] = item;
+                                result[pageId] = item;
                             }
                         });
 
@@ -575,7 +578,6 @@ function Report() {
                 return reduceResult;
             });
         }
-
         /**
          * 存储聚合结果
          * @return bool
@@ -586,7 +588,9 @@ function Report() {
                     return _.merge(result, item)
                 }, {});
 
-                var dateString = moment(pri.startDate).format('yyyy-MM-DD');
+                GLB.app.logger.info(JSON.stringify(reduceResult));
+
+                var dateString = moment(pri.startDate).format('YYYY-MM-DD');
                 var upsertPromiseList = [];
                 for(var pageId in reduceResult) {
                     var condition = {
@@ -602,11 +606,12 @@ function Report() {
                     pageItem['date_string'] = dateString;
                     pageItem['created_time'] = new Date();
 
-                    yield pri.statJsMetaModel.update(condition, pageItem, option).exec();
+                    upsertPromiseList.push(pri.statJsMetaModel.update(condition, pageItem, option).exec());
                 }
 
                 try {
-                    console.log(upsertResult);
+                    var result = yield upsertPromiseList;
+                    console.log(result);
                 } catch (err) {
                     console.log(err);
                 }
@@ -617,10 +622,16 @@ function Report() {
         upsert();
     }
 
+    /**
+     * 聚合Js报错数据
+     */
     pri.statJsError = function reduceJsError() {
 
     }
 
+    /**
+     * 聚合Api报错数据
+     */
     pri.statApiError = function reduceApiError() {
 
     }
@@ -632,11 +643,15 @@ function Report() {
      * @return undefined
      */
     pri.processDate = function processDate(start, end) {
+        // 没有传日期，则默认当日
+        if (_.isUndefined(start) &&
+            _.isUndefined(end)) {
+            start = end = moment().format('YYYY-MM-DD');
+        }
+
         end = _.isUndefined(end) ? end = start : end;
 
-        if (_.isUndefined(start) ||
-            _.isUndefined(end) ||
-            !moment(start).isValid() ||
+        if (!moment(start).isValid() ||
             !moment(end).isValid() ||
             moment(end).isBefore(start)
         ) {
@@ -654,9 +669,9 @@ function Report() {
      * @param  string end   结束日期字符串
      * @return undefined
      */
-    pub.run = function run(start, end) {
+    pub.run = function run(params) {
         // 处理统计日期
-        pri.processDate(start, end);
+        pri.processDate(params[0], params[1]);
 
         pri.statJsMeta();
         pri.statJsError();

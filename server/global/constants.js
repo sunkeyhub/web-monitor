@@ -24,3 +24,6 @@ exports.HELPER_PATH = rootPath + '/app/Helpers';
 
 // 组件路径
 exports.COMPONENT_PATH = rootPath + '/app/Components';
+
+// 组件路径
+exports.JOB_PATH = rootPath + '/app/Jobs';
