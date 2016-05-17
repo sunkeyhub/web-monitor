@@ -20,6 +20,14 @@ var reportJsMetaSchema = new Schema({
         type: Number,
         required: true,
     },
+    channel_id: {
+        type: Number,
+        required: true,
+    },
+    channel_version: {
+        type: String,
+        default: '',
+    },
     user_agent: {
         type: String,
         required: true,
@@ -27,24 +35,19 @@ var reportJsMetaSchema = new Schema({
     os: {
         family: {
             type: String,
-            default: '',
             required: true,
-        },
-        version: {
-            type: String,
-            default: '',
         },
         major: {
             type: String,
-            default: '0',
+            default: '',
         },
         minor: {
             type: String,
-            default: '0',
+            default: '',
         },
         patch: {
             type: String,
-            default: '0',
+            default: '',
         },
     },
     browser: {
@@ -53,21 +56,17 @@ var reportJsMetaSchema = new Schema({
             default: '',
             required: true,
         },
-        version: {
+        major: {
             type: String,
             default: '',
         },
-        major: {
-            type: String,
-            default: '0',
-        },
         minor: {
             type: String,
-            default: '0',
+            default: '',
         },
         patch: {
             type: String,
-            default: '0',
+            default: '',
         },        
     },
     device: {
@@ -88,36 +87,22 @@ var reportJsMetaSchema = new Schema({
         type: String,
         required: true,
     },
-    channel: {
-        id: {
-            type: String,
-            required: true,
-        },
-        name: {
-            type: String,
-            required: true,
-        },
-        version: {
-            type: String,
-            default: '',
-        },
-    },
     network: {
+        isp: {
+            type: String,
+            default: 'Other',
+        },
         phase: {
             type: String,
             enum: ['2G', '3G', '4G', '5G', 'WIFI', 'Other'],
             default: 'Other',
         },
-        isp: {
-            type: String,
-            default: 'Other',
-        }
     },
     performance: {
         timing: {
             type: {},
             required: true,
-        }
+        },
     },
     timing_human: {
         type: {},
@@ -126,7 +111,7 @@ var reportJsMetaSchema = new Schema({
     created_time: {
         type: Date, 
         default: Date.now,
-    }
+    },
 });
 
 // 设置集合名称

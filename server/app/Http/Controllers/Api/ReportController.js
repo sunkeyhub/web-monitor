@@ -192,12 +192,6 @@ function ReportController() {
      * @return Object
      */
     pri.processCommonData = function processCommonData(cb) {
-        pri.serviceData.channel = {
-            id: pri.serviceData.channel_id,
-            name: pri.reportIdMap.channel[pri.serviceData.channel_id].name,
-            version: pri.serviceData.channel_version,
-        };
-
         var ua = useragent.parse(pri.serviceData.user_agent);
         pri.serviceData.os = {
             family: ua.os.family,
@@ -207,7 +201,7 @@ function ReportController() {
         pri.serviceData.browser = {
             family: ua.family,
             major: ua.major,
-            minor: ua.monor,
+            minor: ua.minor,
         };
 
         pri.serviceData.ip = pub.request.clientIp;

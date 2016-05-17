@@ -20,6 +20,14 @@ var reportJsErrorSchema = new Schema({
         type: Number,
         required: true,
     },
+    channel_id: {
+        type: Number,
+        required: true,
+    },
+    channel_version: {
+        type: String,
+        default: '',
+    },
     user_agent: {
         type: String,
         required: true,
@@ -27,24 +35,19 @@ var reportJsErrorSchema = new Schema({
     os: {
         family: {
             type: String,
-            default: '',
             required: true,
-        },
-        version: {
-            type: String,
-            default: '',
         },
         major: {
             type: String,
-            default: '0',
+            default: '',
         },
         minor: {
             type: String,
-            default: '0',
+            default: '',
         },
         patch: {
             type: String,
-            default: '0',
+            default: '',
         },
     },
     browser: {
@@ -52,10 +55,6 @@ var reportJsErrorSchema = new Schema({
             type: String,
             default: '',
             required: true,
-        },
-        version: {
-            type: String,
-            default: '',
         },
         major: {
             type: String,
@@ -87,20 +86,6 @@ var reportJsErrorSchema = new Schema({
     ip: {
         type: String,
         required: true,
-    },
-    channel: {
-        id: {
-            type: String,
-            required: true,
-        },
-        name: {
-            type: String,
-            required: true,
-        },
-        version: {
-            type: String,
-            default: '',
-        },
     },
     network: {
         phase: {

@@ -20,83 +20,95 @@ var statJsMetaSchema = new Schema({
         type: Number,
         required: true,
     },
-    os: {
-        family: [{
-            name: {
-                type: String,
-                required: true,
-            },
-            qty: {
-                type: Number,
-                required: true,
-            },
-            timing: {
-                performance: {
-                    type: {},
-                    required: true,
-                },
-                period: {
-                    type: {},
-                    required: true,
-                },
-                human: {
-                    type: {},   
-                    required: true,
-                },
-            }
-        }],
-    },
-    browser: {
-        family: [{
-            name: {
-                type: String,
-                required: true,
-            },
-            qty: {
-                type: Number,
-                required: true,
-            },
-            timing: {
-                performance: {
-                    type: {},
-                    required: true,
-                },
-                period: {
-                    type: {},
-                    required: true,
-                },
-                human: {
-                    type: {},   
-                    required: true,
-                },
-            }
-        }],
-        family_major: [{
-            name: {
-                type: String,
-                required: true,
-            },
-            qty: {
-                type: Number,
-                required: true,
-            },
-            timing: {
-                performance: {
-                    type: {},
-                    required: true,
-                },
-                period: {
-                    type: {},
-                    required: true,
-                },
-                human: {
-                    type: {},   
-                    required: true,
-                },
-            }
-        }],
-    },
-    channel: [{
+    os_family: [{
+        name: {
+            type: String,
+            required: true,
+        },
+        qty: {
+            type: Number,
+            required: true,
+        },
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
+            type: {},
+            required: true,
+        },
+        timing_period: {
+            type: {},
+            required: true,
+        },
+    }],
+    os_full: [{
+        name: {
+            type: String,
+            required: true,
+        },
+        qty: {
+            type: Number,
+            required: true,
+        },
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
+            type: {},
+            required: true,
+        },
+        timing_period: {
+            type: {},
+            required: true,
+        },
+    }],
+    browser_family: [{
+        name: {
+            type: String,
+            required: true,
+        },
+        qty: {
+            type: Number,
+            required: true,
+        },
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
+            type: {},
+            required: true,
+        },
+        timing_period: {
+            type: {},
+            required: true,
+        },
+    }],
+    browser_full: [{
+        name: {
+            type: String,
+            required: true,
+        },
+        qty: {
+            type: Number,
+            required: true,
+        },
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
+            type: {},
+            required: true,
+        },
+        timing_period: {
+            type: {},
+            required: true,
+        },
+    }],
+    channel_id: [{
         id: {
             type: Number,
             required: true,
@@ -105,86 +117,72 @@ var statJsMetaSchema = new Schema({
             type: Number,
             required: true,
         },
-        timing: {
-            performance: {
-                type: {},
-                required: true,
-            },
-            period: {
-                type: {},
-                required: true,
-            },
-            human: {
-                type: {},   
-                required: true,
-            },
-        }
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
+            type: {},
+            required: true,
+        },
+        timing_period: {
+            type: {},
+            required: true,
+        },
     }],
-    network: {
-        phase: [{
-            name: {
-                type: Number,
-                required: true,
-            },
-            qty: {
-                type: Number,
-                required: true,
-            },
-            timing: {
-                performance: {
-                    type: {},
-                    required: true,
-                },
-                period: {
-                    type: {},
-                    required: true,
-                },
-                human: {
-                    type: {},   
-                    required: true,
-                },
-            }
-        }],
-        isp: [{
-            name: {
-                type: Number,
-                required: true,
-            },
-            qty: {
-                type: Number,
-                required: true,
-            },
-            timing: {
-                performance: {
-                    type: {},
-                    required: true,
-                },
-                period: {
-                    type: {},
-                    required: true,
-                },
-                human: {
-                    type: {},   
-                    required: true,
-                },
-            }
-        }],
-    },
-    timing: {
-        performance: {
+    network_phase: [{
+        name: {
+            type: Number,
+            required: true,
+        },
+        qty: {
+            type: Number,
+            required: true,
+        },
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
             type: {},
             required: true,
         },
-        period: {
-            type: {},
-            required: true, 
-        },
-        human: {
+        timing_period: {
             type: {},
             required: true,
         },
-    },
+    }],
+    network_isp: [{
+        name: {
+            type: Number,
+            required: true,
+        },
+        qty: {
+            type: Number,
+            required: true,
+        },
+        timing_human: {
+            type: {},   
+            required: true,
+        },
+        timing_performance: {
+            type: {},
+            required: true,
+        },
+        timing_period: {
+            type: {},
+            required: true,
+        },
+    }],
     timing_human: {
+        type: {},
+        required: true,
+    },
+    timing_performance: {
+        type: {},
+        required: true,
+    },
+    timing_period: {
         type: {},
         required: true,
     },
@@ -192,7 +190,7 @@ var statJsMetaSchema = new Schema({
         type: String,
         required: true,
     },
-    created_time: {
+    updated_time: {
         type: Date, 
         default: Date.now,
     },

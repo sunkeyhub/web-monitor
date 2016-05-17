@@ -7,6 +7,6 @@
 // 载入全局变量
 GLB = require('./global/index');
 
-GLB.cli = require('./boot/cli');
+GLB.app = require('./boot/cli');
 
-GLB.cli.run();
+GLB.app.run();
