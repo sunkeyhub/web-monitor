@@ -487,7 +487,7 @@ function Report() {
                                 $concat: [
                                     '$browser.family',
                                     '$browser.major',
-                                    '_',
+                                    '.',
                                     '$browser.minor',
                                 ],
                             },                                
@@ -510,10 +510,10 @@ function Report() {
             }
 
             /**
-             * channelId性能因子
+             * channel性能因子
              * @return promise
              */
-            function channelId() {
+            function channel() {
                 var factor = [
                     {},
                     {
@@ -530,11 +530,11 @@ function Report() {
                     },
                     {
                         $project: {
-                            name: '$_id.channel_id',
+                            id: '$_id.channel_id',
                         },
                     },
                 ];
-                return timing('channel_id', factor);
+                return timing('channel', factor);
             }
 
             /**
@@ -602,7 +602,7 @@ function Report() {
                     osFull(),
                     browserFamily(),
                     browserFull(),
-                    channelId(),
+                    channel(),
                     networkPhase(),
                     networkIsp(),
                     timing(),
@@ -665,7 +665,7 @@ function Report() {
              * 聚合js报错数据
              * @return promise
              */
-            function jsError() {
+            function jsError(key, factor) {
                 var pipeline = [
                     {
                         $match: {
@@ -677,41 +677,184 @@ function Report() {
                     },
                     {
                         $project: {
-
+                            page_id: 1,
+                            msg: 1,
+                            file: 1,
                         },
                     },
                     {
                         $group: {
-
+                            _id: {
+                                page_id: '$page_id',
+                                msg: '$msg',
+                                file_path: '$file.path',
+                                file_line: '$file.line',
+                                file_column: '$file.column',
+                            },
+                            qty: {
+                                $sum: 1,
+                            },
                         },
                     },
-                ];
+                    {
+                        $project: {
+                            _id: 0,
+                            page_id: '$_id.page_id',
+                            msg: '$_id.msg',
+                            file: {
+                                path: '$_id.file_path',
+                                line: '$_id.file_line',
+                                column: '$_id.file_column',
+                            },
+                            qty: 1,
+                        },
+                    },
+                ]; // pipeline
+
+                if (_.isArray(factor)) {
+                    pipeline = _.merge(pipeline, factor);
+                }
+
+                return co(function *() {
+                    try {
+                        var docs = yield pri.reportJsErrorModel.aggregate(pipeline).exec();
+                        var result = {};
+                        _.forEach(docs, function(item) {
+                            var pageId = item.page_id;
+                            delete item.page_id;
+
+                            if (_.isArray(factor)) {
+                                result[pageId] = {};
+                                result[pageId][key] = item;
+                            } else {
+                                result[pageId] = item;
+                            }
+                        });
+
+                        return result;
+                    } catch(err) {
+                        console.log(err);
+                    }
+                });
             }
 
             /**
              * 系统报错因子
              */
             function osFull() {
+                var factor = [
+                    {},
+                    {
+                        $project: {
+                            os_full: {
+                                $concat: [
+                                    '$os.family',
+                                    '$os.major',
+                                    '.',
+                                    '$os.minor',
+                                ],
+                            },                                
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                os_full: '$os_full',
+                            }
+                        },
+                    },
+                    {
+                        $project: {
+                            name: '$_id.os_full',
+                        },
+                    },
+                ];
 
+                return jsError('os_full', factor);
             }
 
             /**
-             * 浏览器报错因子
+             * browserFull报错因子
+             * @return promise
              */
             function browserFull() {
-
+                var factor = [
+                    {},
+                    {
+                        $project: {
+                            browser_full: {
+                                $concat: [
+                                    '$browser.family',
+                                    '$browser.major',
+                                    '.',
+                                    '$browser.minor',
+                                ],
+                            },                                
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                browser_full: '$browser_full',
+                            }
+                        },
+                    },
+                    {
+                        $project: {
+                            name: '$_id.browser_full',
+                        },
+                    },
+                ];
+                return jsError('browser_full', factor);   
             }
 
-            /**
-             * 渠道报错因子
-             */
-            function channelId() {
+            // 聚合数据
+            return co(function *() {
+                var reduceResult = yield [
+                    osFull(),
+                    browserFull(),
+                    jsError(),
+                ];
 
-            }
+                return reduceResult;
+            });
         }
 
         function upsert() {
+            return co(function *() {
+                var reduceResult = _.reduce(yield reduce(), function(result, item) {
+                    return _.merge(result, item)
+                }, {});
 
+                GLB.app.logger.info(JSON.stringify(reduceResult));
+
+                var dateString = moment(pri.startDate).format('YYYY-MM-DD');
+                var upsertPromiseList = [];
+                for(var pageId in reduceResult) {
+                    var condition = {
+                        page_id: +pageId, 
+                        data_string: dateString,
+                    }; 
+                    var option = {
+                        upsert: true,
+                    };
+
+                    var pageItem = reduceResult[pageId];
+                    pageItem['page_id'] = +pageId;
+                    pageItem['date_string'] = dateString;
+                    pageItem['created_time'] = new Date();
+
+                    upsertPromiseList.push(pri.statJsErrorModel.update(condition, pageItem, option).exec());
+                }
+
+                try {
+                    var result = yield upsertPromiseList;
+                    console.log(result);
+                } catch (err) {
+                    console.log(err);
+                }
+
+            });
         }
 
         upsert();
@@ -761,7 +904,7 @@ function Report() {
         // 处理统计日期
         pri.processDate(params[0], params[1]);
 
-        pri.statJsMeta();
+        // pri.statJsMeta();
         pri.statJsError();
         pri.statApiError();
     }

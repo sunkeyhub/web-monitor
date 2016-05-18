@@ -108,7 +108,7 @@ var statJsMetaSchema = new Schema({
             required: true,
         },
     }],
-    channel_id: [{
+    channel: [{
         id: {
             type: Number,
             required: true,

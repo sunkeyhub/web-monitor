@@ -13,6 +13,10 @@ var statJsErrorSchema = new Schema({
         required: true,
     },
     os_full: [{
+        name: {
+            type: String, 
+            required: true,
+        },
         qty: {
             type: Number,
             required: true,
@@ -37,30 +41,10 @@ var statJsErrorSchema = new Schema({
         },
     }],
     browser_full: [{
-        qty: {
-            type: Number,
+        name: {
+            type: String, 
             required: true,
         },
-        msg: {
-            type: String,
-            required: true,
-        },
-        file: {
-            path: {
-                type: String,
-                required: true,           
-            },
-            line: {
-                type: Number,
-                required: true,
-            },
-            column: {
-                type: Number,
-                required: true,
-            },
-        },
-    }],
-    channel_id: [{
         qty: {
             type: Number,
             required: true,

@@ -69,7 +69,7 @@ var reportJsErrorSchema = new Schema({
             default: '0',
         },        
     },
-    divice: {
+    device: {
         family: {
             type: String,
             default: 'Other',
