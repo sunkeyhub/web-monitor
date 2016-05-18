@@ -28,6 +28,12 @@ function Report() {
          * @return object
          */
         function reduce() {
+            /**
+             * 聚合性能数据
+             * @param  string key    因子键
+             * @param  object factor 因子对象
+             * @return promise
+             */
             function timing(key, factor) {
                 var pipeline = [
                     {
@@ -281,7 +287,10 @@ function Report() {
                 });
             }
 
-            // 聚合pv
+            /**
+             * 聚合pv
+             * @return promise
+             */
             function pv() {
                 var pipeline = [
                     {
@@ -326,7 +335,10 @@ function Report() {
                 });
             }
 
-            // 聚合uv
+            /**
+             * 聚合uv
+             * @return promise
+             */
             function uv() {
                 var pipeline = [
                     {
@@ -371,7 +383,10 @@ function Report() {
                 });
             }
 
-            // 聚合os_family
+            /**
+             * osFamily性能因子
+             * @return promise
+             */
             function osFamily() {
                 var factor = [
                     {},
@@ -396,7 +411,10 @@ function Report() {
                 return timing('os_family', factor);               
             }
 
-            // 聚合os_full
+            /**
+             * osFull性能因子
+             * @return promise
+             */
             function osFull() {
                 var factor = [
                     {},
@@ -428,7 +446,10 @@ function Report() {
                 return timing('os_full', factor);                
             }
 
-            // 聚合browser_family
+            /**
+             * browserFamily性能因子
+             * @return promise
+             */
             function browserFamily() {
                 var factor = [
                     {},
@@ -453,7 +474,10 @@ function Report() {
                 return timing('browser_family', factor);
             }
 
-            // 聚合browser_full
+            /**
+             * browserFull性能因子
+             * @return promise
+             */
             function browserFull() {
                 var factor = [
                     {},
@@ -485,7 +509,10 @@ function Report() {
                 return timing('browser_full', factor);   
             }
 
-            // 聚合channel_id
+            /**
+             * channelId性能因子
+             * @return promise
+             */
             function channelId() {
                 var factor = [
                     {},
@@ -510,7 +537,10 @@ function Report() {
                 return timing('channel_id', factor);
             }
 
-            // 聚合network_phase
+            /**
+             * networkPhase性能因子
+             * @return promise
+             */
             function networkPhase() {
                 var factor = [
                     {},
@@ -535,7 +565,10 @@ function Report() {
                 return timing('network_phase', factor);
             }
 
-            // 聚合network_isp
+            /**
+             * networkIsp性能因子
+             * @return promise
+             */
             function networkIsp() {
                 var factor = [
                     {},
@@ -578,6 +611,7 @@ function Report() {
                 return reduceResult;
             });
         }
+
         /**
          * 存储聚合结果
          * @return bool
@@ -626,7 +660,61 @@ function Report() {
      * 聚合Js报错数据
      */
     pri.statJsError = function reduceJsError() {
+        function reduce() {
+            /**
+             * 聚合js报错数据
+             * @return promise
+             */
+            function jsError() {
+                var pipeline = [
+                    {
+                        $match: {
+                            created_time: {
+                                $gte: pri.startDate,
+                                $lte: pri.endDate,
+                            }
+                        },
+                    },
+                    {
+                        $project: {
 
+                        },
+                    },
+                    {
+                        $group: {
+
+                        },
+                    },
+                ];
+            }
+
+            /**
+             * 系统报错因子
+             */
+            function osFull() {
+
+            }
+
+            /**
+             * 浏览器报错因子
+             */
+            function browserFull() {
+
+            }
+
+            /**
+             * 渠道报错因子
+             */
+            function channelId() {
+
+            }
+        }
+
+        function upsert() {
+
+        }
+
+        upsert();
     }
 
     /**
