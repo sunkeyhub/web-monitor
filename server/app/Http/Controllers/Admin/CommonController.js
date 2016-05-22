@@ -6,7 +6,8 @@
 
 var _ = require('lodash');
 var BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
-var reportIdMap = require(GLB.CONS.ROOT_PATH + '/app/Data/ReportIdMap');
+var report = require(GLB.CONS.ROOT_PATH + '/app/Data/Report');
+var factors = require(GLB.CONS.ROOT_PATH + '/app/Data/Factors');
 var moment = require('moment');
 
 function CommonController() {
@@ -16,17 +17,23 @@ function CommonController() {
 
     /**
      * 获取页面列表接口
-     * @return json
+     * @return Json
      */
-    pub.pageList = function() {
-        var pageMap = reportIdMap.page;
-        var pageList = [];
-        _.forOwn(pageMap, function(val, key) {
-            val['page_id'] = key;
-            pageList.push(val);
-        });
+    pub.pageList = function pageList() {
+        var pageList = report.page;
 
         pub.response.json({code: 200, data: pageList});
+    }
+
+    /**
+     * 获取分析因子列表
+     * @return Json
+     */
+    pub.factorList = function factorList() {
+        var type = pub.request.query.type;
+        var list = factors[type];
+
+        pub.response.json({code: 200, data: list});
     }
 }
 

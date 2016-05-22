@@ -24,7 +24,7 @@ export function getPageList() {
         return fetch(requestUrl).then(function(res) {
             return res.json();
         }).then(function(json) {
-            dispatch({type: 'UPDATE_PAGE_LIST', data: json});
+            dispatch({type: 'INIT_PAGE_LIST', data: json});
         });
     };
 }
@@ -41,27 +41,35 @@ export function getSectionData(pageId, startDate, endDate) {
         var state = getState();
         startDate = moment(startDate).format('YYYY-MM-DD');
         endDate = moment(endDate).format('YYYY-MM-DD');
-        var queryObj = {
-            protocol: 'http',
-            page_id: pageId,
-            start_date: startDate,
-            end_date: endDate,
-        };
 
         switch (state.routing.locationBeforeTransitions.pathname) {
             case '/stat/overview': {
+                var queryObj = {
+                    page_id: pageId,
+                    start_date: startDate,
+                    end_date: endDate,
+                };
                 var pathname = 'admin/stat/overview';
-                var actionType = 'UPDATE_OVERVIEW_DATA';
+                var actionType = 'UPDATE_OVERVIEW_SECTION';
                 break;
             }
             case '/stat/timing': {
-
+                var queryObj = {
+                    type: 'timing',
+                };
+                var pathname = 'admin/common/factorList';
+                var actionType = 'INIT_FACTOR_LIST';
+                break;
             }
             case '/stat/jsError': {
-
+                var pathname = 'admin/stat/jsError';
+                var actionType = 'UPDATE_JS_ERROR_SECTION';
+                break;
             }
             case '/stat/apiError': {
-
+                var pathname = 'admin/stat/apiError';
+                var actionType = 'UPDATE_API_ERROR_SECTION';
+                break;
             }
         }
 
@@ -73,12 +81,75 @@ export function getSectionData(pageId, startDate, endDate) {
             query: queryObj,
         });
 
-        console.log(requestUrl);
+        return fetch(requestUrl).then(function(res) {
+            return res.json();
+        }).then(function(json) {
+            dispatch({type: actionType, data: json});
+        });
+    };
+}
+
+export function getSubSectionData(factorKey) {
+    return (dispatch, getState) => {
+        var state = getState();
+        var startDate = moment(state.stat.topbar.startDate).format('YYYY-MM-DD');
+        var endDate = moment(state.stat.topbar.endDate).format('YYYY-MM-DD');
+
+        var queryObj = {
+            page_id: state.stat.topbar.pageId,
+            start_date: startDate,
+            end_date: endDate,
+            factor: factorKey,
+        }
+
+        switch (state.routing.locationBeforeTransitions.pathname) {
+            case '/stat/timing': {
+                var pathname = 'admin/stat/timing';
+                var actionType = 'UPDATE_TIMING_SECTION';
+                break;
+            }
+            case '/stat/jsError': {
+                var pathname = 'admin/stat/jsError';
+                var actionType = 'UPDATE_JS_ERROR_SECTION';
+                break;
+            }
+            case '/stat/apiError': {
+                var pathname = 'admin/stat/apiError';
+                var actionType = 'UPDATE_API_ERROR_SECTION';
+                break;
+            }
+        }
+
+        var requestUrl = url.format({
+            protocol: 'http',
+            hostname: server['hostname'],
+            port: server['port'],
+            pathname: pathname,
+            query: queryObj,
+        });
 
         return fetch(requestUrl).then(function(res) {
             return res.json();
         }).then(function(json) {
             dispatch({type: actionType, data: json});
         });
+    };   
+}
+
+export function changeTimingSection(data) {
+    return {
+        type: 'CHANGE_TIMING_SECTION',
+        data: data,
+    };
+}
+
+/**
+ * 更改topbar
+ * @return Promise
+ */
+export function changeTopbar(data) {
+    return {
+        type: 'CHANGE_TOPBAR',
+        data: data,
     };
 }

@@ -104,12 +104,17 @@
 
                 .m-section {
                     .title {
+                        display: flex;
                         font-size: 16px;
                         font-weight: 600;
                         height: 50px;
                         line-height: 50px;
                         border-bottom: 1px solid $divider-color;
                         color: $primary-text;
+
+                        span {
+                            flex: none;
+                        }
                     } 
 
                     .content {
@@ -132,6 +137,18 @@
                                 height: 300px; 
                                 background-color: $light-primary-color;
                             }
+                        }
+                    }
+
+                    .m-select-factor {
+                        display: flex;
+                        justify-content: flex-end;
+                        align-items: center;
+                        flex: 1;
+
+                        .u-select {
+                            flex: none;
+                            width: 150px;
                         }
                     }
                 }

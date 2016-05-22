@@ -19,7 +19,7 @@ function ReportController() {
     pri.BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
     pri.BaseController.call(this);
 
-    pri.reportIdMap = require(GLB.CONS.ROOT_PATH + '/app/Data/ReportIdMap');
+    pri.report = require(GLB.CONS.ROOT_PATH + '/app/Data/Report');
     pri.reportJsMetaModel = require(GLB.CONS.MODEL_PATH + '/ReportJsMetaModel');
     pri.reportJsErrorModel = require(GLB.CONS.MODEL_PATH + '/ReportJsErrorModel');
     pri.reportApiErrorModel = require(GLB.CONS.MODEL_PATH + '/ReportApiErrorModel');
@@ -44,7 +44,7 @@ function ReportController() {
                 pri.serviceOption = queryJson.option;
                 pri.serviceData = queryJson.data;
 
-                if (!pri.reportIdMap.page[pri.serviceData.page_id]) {
+                if (_.findIndex(pri.report.page, ['page_id', pri.serviceData.page_id]) < 0) {
                     return pub.response.jsonp({code: 400, msg: 'page_id 不存在'});
                 }
 

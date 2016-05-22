@@ -8,21 +8,25 @@ var moment = require('moment');
 
 var initialState = {
     pageList: [],
+    pageId: '-',
     startDate: moment().subtract(7, 'day').toDate(),
     endDate: moment().toDate(),
-    isInit: false,
 };
 
 export default function topbar(state=initialState, action) {
     switch (action.type) {
-        case 'UPDATE_PAGE_LIST': {
+        case 'INIT_PAGE_LIST': {
             var data = action.data;
             if (data.code == 200) {
-                return Object.assign({}, state, {isInit: true, pageList: data.data});
+                var pageList = data.data;
+                if (pageList && pageList.length > 0) {
+                    return Object.assign({}, state, {pageId: pageList[0].id, pageList: data.data});
+                }
             }
         }
-        case 'CHANGE_DATE': {
-
+        case 'CHANGE_TOPBAR': {
+            var data = action.data;
+            return Object.assign({}, state, data);
         }
     }
 

@@ -22,7 +22,7 @@ var initialState = {
 
 export default function overview(state=initialState, action) {
     switch (action.type) {
-        case 'UPDATE_OVERVIEW_DATA': {
+        case 'UPDATE_OVERVIEW_SECTION': {
             var data = action.data;
             if (data.code == 200) {
                 var resData = data.data;

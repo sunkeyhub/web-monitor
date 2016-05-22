@@ -53,6 +53,12 @@ module.exports = [
                 path: '/common/pageList',
                 route: 'CommonController@pageList',
             },
+            {
+                comment: '分析因子列表接口',
+                method: 'GET',
+                path: '/common/factorList',
+                route: 'CommonController@factorList',
+            },
         ],
     },
 ];

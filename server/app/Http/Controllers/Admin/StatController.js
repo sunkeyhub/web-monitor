@@ -7,7 +7,7 @@
 var _ = require('lodash');
 var co = require('co');
 var BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
-var reportIdMap = require(GLB.CONS.ROOT_PATH + '/app/Data/ReportIdMap');
+var report = require(GLB.CONS.ROOT_PATH + '/app/Data/Report');
 var moment = require('moment');
 
 function StatController() {
@@ -124,8 +124,6 @@ function StatController() {
                 $project: {
                     _id: 0,
                     date_string: '$_id.date_string',
-                    pv: 1,
-                    uv: 1,
                     timing: 1,
                 },
             },
@@ -253,15 +251,116 @@ function StatController() {
      * @return json
      */
     pub.timing = function timing() {
-        pub.response.end('timing');
+        var factor = pub.request.query.factor;
+        return co(function *() {
+            return yield pri.reduceTiming(factor);
+        });
     }
 
     /**
      * 聚合timing数据
      * @return Promise
      */
-    pri.reduceTiming = function reduceTiming() {
+    pri.reduceTiming = function reduceTiming(factor) {
+        var match = {
+            page_id: +pri.pageId,
+            date_string: {
+                $gte: pri.startDate,
+                $lte: pri.endDate,
+            },
+        };
 
+        var pAll = [
+            {
+                $match: match,
+            },
+            {
+                $group: {
+                    _id: {
+                        date_string: '$date_string',
+                    },
+                    timing: {
+                        $avg: '$timing_performance.total',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date_string: '$_id.date_string',
+                    timing: 1,
+                },
+            },
+            {
+                $sort: {
+                    date_string: 1,
+                },
+            },
+        ];
+
+        var pOsAll = [
+            {
+                $match: match,
+            },
+            {
+                $project: {
+                    date_string: 1,
+                    os_all: 1,
+                }
+            },
+            {
+                $unwind: '$os_all',
+            },
+            {
+                $group: {
+                    _id: {
+                        date_string: '$date_string',
+                        name: '$name',
+                    },
+                    timing: {
+                        $avg: '$timing_performance.total',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: '$_id.name',
+                    date_string: '$_id.date_string',
+                    timing: 1,
+                },
+            },
+            {
+                $sort: {
+                    date_string: 1,
+                },
+            },
+        ];
+
+        var pBrowserAll = _.cloneDeep(pOsAll);
+        pBrowser[2] = {
+            $unwind: '$browser_all',
+        };
+
+        switch (factor) {
+            case 'all': {
+                var pipeline = pAll;
+                break;
+            }
+            case 'os_all': {
+                var pipeline = pOsAll;
+                break;
+            }
+            case 'browser_all': {
+                var pipeline = pBrowserAll;
+                break;
+            }
+        }
+
+        return co(function *() {
+            var result = pri.statJsMetaModel.aggregate(pipeline).exec(),
+            
+        });
     }
 }
 

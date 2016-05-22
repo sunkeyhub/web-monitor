@@ -43,6 +43,11 @@ class OverviewSection extends Component {
                 {
                     name:'系列名称',
                     type:'line',
+                    label: {
+                        normal: {
+                            show: true,
+                        }
+                    },
                     data:[],
                 }
             ]
@@ -61,8 +66,8 @@ class OverviewSection extends Component {
         this.apiErrorChart = echarts.init(apiErrorDOM);
     }
 
-    componentWillUpdate(nextProps) {
-        this.refreshChart(nextProps);
+    componentDidUpdate() {
+        this.refreshChart(this.props);
     }
 
     refreshChart(nextProps) {
