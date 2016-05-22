@@ -6,18 +6,15 @@ import echarts from 'echarts';
 
 class OverviewSection extends Component {
     componentDidMount() {
-        var timingDOM = ReactDOM.findDOMNode(this.refs.timingChart);
-        var timingChart = echarts.init(timingDOM);
-
-        var option = {
+        var lineChartTpl = {
             title: {
                 text: ''
             },
             tooltip : {
-                trigger: 'axis'
+                trigger: 'axis',
             },
             legend: {
-                data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+                data:['系列名称'],
             },
             toolbox: {
                 feature: {
@@ -34,7 +31,7 @@ class OverviewSection extends Component {
                 {
                     type : 'category',
                     boundaryGap : false,
-                    data : ['周一','周二','周三','周四','周五','周六','周日','1','2','4','5','周一','周二','周三','周四','周五','周六','周日','1','2','4','5']
+                    data : []
                 }
             ],
             yAxis : [
@@ -44,19 +41,55 @@ class OverviewSection extends Component {
             ],
             series : [
                 {
-                    name:'邮件营销',
+                    name:'系列名称',
                     type:'line',
-                    stack: '总量',
-                    areaStyle: {normal: {}},
-                    data:[120, 132, 101, 134, 90, 230, 210,134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,134, 90, 230, 210]
+                    data:[],
                 }
             ]
         };
 
-        timingChart.setOption(option);
+        this.timingOption = _.cloneDeep(lineChartTpl);
+        this.jsErrorOption = _.cloneDeep(lineChartTpl);
+        this.apiErrorOption = _.cloneDeep(lineChartTpl);
+
+        var timingDOM = ReactDOM.findDOMNode(this.refs.timingChart);
+        var jsErrorDOM = ReactDOM.findDOMNode(this.refs.jsErrorChart);
+        var apiErrorDOM = ReactDOM.findDOMNode(this.refs.apiErrorChart);
+
+        this.timingChart = echarts.init(timingDOM);
+        this.jsErrorChart = echarts.init(jsErrorDOM);
+        this.apiErrorChart = echarts.init(apiErrorDOM);
+    }
+
+    componentWillUpdate(nextProps) {
+        this.refreshChart(nextProps);
+    }
+
+    refreshChart(nextProps) {
+        this.timingOption.legend.data[0] = '页面加载时间（ms）';
+        this.timingOption.series[0].name = '页面加载时间（ms）';
+        this.timingOption.series[0].data = _.values(nextProps.timing);
+        this.timingOption.xAxis[0].data = _.keys(nextProps.timing);
+        this.timingChart.setOption(this.timingOption);
+
+        this.jsErrorOption.legend.data[0] = 'Js 报错数';
+        this.jsErrorOption.series[0].name = 'Js 报错数';
+        this.jsErrorOption.series[0].data = _.values(nextProps.jsError);
+        this.jsErrorOption.xAxis[0].data = _.keys(nextProps.jsError);
+        this.jsErrorChart.setOption(this.jsErrorOption);
+
+        this.apiErrorOption.legend.data[0] = 'Api 报错数';
+        this.apiErrorOption.series[0].name = 'Api 报错数';
+        this.apiErrorOption.series[0].data = _.values(nextProps.apiError);
+        this.apiErrorOption.xAxis[0].data = _.keys(nextProps.apiError);
+        this.apiErrorChart.setOption(this.apiErrorOption);
     }
 
     render() {
+        var {
+            visit,
+        } = this.props;
+
         return (
             <div>
                 <section className="m-section m-section-visit">
@@ -69,7 +102,7 @@ class OverviewSection extends Component {
                             <div className="data">
                                 <div className="label">PV</div>
                                 <div className="line"></div>
-                                <div className="number">10000</div>
+                                <div className="number">{visit.pv}</div>
                             </div>
                         </div>
                         <div className="box">
@@ -79,7 +112,7 @@ class OverviewSection extends Component {
                             <div className="data">
                                 <div className="label">UV</div>
                                 <div className="line"></div>
-                                <div className="number">10000</div>
+                                <div className="number">{visit.uv}</div>
                             </div>
                         </div>
                         <div className="box">
@@ -87,9 +120,9 @@ class OverviewSection extends Component {
                                 <Icon type="eye-o" />
                             </div>
                             <div className="data">
-                                <div className="label">平均时间(ms)</div>
+                                <div className="label">平均时间（ms）</div>
                                 <div className="line"></div>
-                                <div className="number">10000</div>
+                                <div className="number">{visit.timing}</div>
                             </div>
                         </div>
                         <div className="box">
@@ -97,9 +130,9 @@ class OverviewSection extends Component {
                                 <Icon type="eye-o" />
                             </div>
                             <div className="data">
-                                <div className="label">JS报错数</div>
+                                <div className="label">Js 报错数</div>
                                 <div className="line"></div>
-                                <div className="number">10000</div>
+                                <div className="number">{visit.jsError}</div>
                             </div>
                         </div>
                         <div className="box">
@@ -107,9 +140,9 @@ class OverviewSection extends Component {
                                 <Icon type="eye-o" />
                             </div>
                             <div className="data">
-                                <div className="label">API报错数</div>
+                                <div className="label">Api 报错数</div>
                                 <div className="line"></div>
-                                <div className="number">10000</div>
+                                <div className="number">{visit.apiError}</div>
                             </div>
                         </div>
                     </div>
@@ -131,18 +164,18 @@ class OverviewSection extends Component {
                     <h5 className="title">报错概览</h5>
                     <div className="content">
                         <div className="m-subsection">
-                            <h6 className="title">JS报错趋势</h6>
+                            <h6 className="title">Js 报错趋势</h6>
                             <div className="content">
                                 <div className="m-chart">
-                                    <div className="u-chart" ref="timingChart"></div>
+                                    <div className="u-chart" ref="jsErrorChart"></div>
                                 </div>
                             </div>
                         </div>
                         <div className="m-subsection">
-                            <h6 className="title">API报错趋势</h6>
+                            <h6 className="title">Api 报错趋势</h6>
                             <div className="content">
                                 <div className="m-chart">
-                                    <div className="u-chart" ref="timingChart"></div>
+                                    <div className="u-chart" ref="apiErrorChart"></div>
                                 </div>
                             </div>
                         </div>
@@ -154,8 +187,12 @@ class OverviewSection extends Component {
 }
 
 function mapStateToProps(state) {
+    var overview = state.stat.overview;
     return {
-        overstat: state.stat.overview
+        visit: overview.visit,
+        timing: overview.timing,
+        jsError: overview.jsError,
+        apiError: overview.apiError,
     }
 }
 

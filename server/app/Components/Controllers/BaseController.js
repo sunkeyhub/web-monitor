@@ -13,6 +13,8 @@ function BaseController() {
         this.response = res;
         this.next = next;
 
+        this.response.set('Content-type', 'application/json;charset=utf8');
+
         // 跨域资源共享
         var corsConfig = require(GLB.CONS.CONFIG_PATH + '/cors');
         this.response.set('Access-Control-Allow-Origin', corsConfig.allow.join(','));       

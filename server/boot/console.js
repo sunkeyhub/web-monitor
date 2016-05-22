@@ -112,7 +112,7 @@ function App() {
         // 初始化
         pri.init();
 
-        var jobConfig = require(GLB.CONS.ROOT_PATH + '/app/Cli/jobs');
+        var jobConfig = require(GLB.CONS.ROOT_PATH + '/app/Console/jobs');
         var jobName = process.argv[2];
 
         if (!jobName || !jobConfig[jobName]) {

@@ -22,7 +22,224 @@ function Report() {
     pri.startDate = null;
     pri.endDate = null;
 
-    pri.statJsMeta = function reduceJsMeta() {
+    pri.factorReduce = function(factorFuncName, reduceFunc) {
+        var funcObj = {};
+        /**
+         * osFamily性能因子
+         * @return promise
+         */
+        funcObj.osFamily = function osFamily() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        'os_family': '$os.family',
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            os_family: '$os_family',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        name: '$_id.os_family',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'os_family', factor);               
+        }
+
+        /**
+         * osFull性能因子
+         * @return promise
+         */
+        funcObj.osFull = function osFull() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        os_full: {
+                            $concat: [
+                                '$os.family',
+                                '_',
+                                '$os.major',
+                                '.',
+                                '$os.minor',
+                            ],
+                        },                                
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            os_full: '$os_full',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        name: '$_id.os_full',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'os_full', factor);                
+        }
+
+        /**
+         * browserFamily性能因子
+         * @return promise
+         */
+        funcObj.browserFamily = function browserFamily() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        browser_family: '$browser.family',
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            browser_family: '$browser_family',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        name: '$_id.browser_family',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'browser_family', factor);
+        }
+
+        /**
+         * browserFull性能因子
+         * @return promise
+         */
+        funcObj.browserFull = function browserFull() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        browser_full: {
+                            $concat: [
+                                '$browser.family',
+                                '_',
+                                '$browser.major',
+                                '.',
+                                '$browser.minor',
+                            ],
+                        },                                
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            browser_full: '$browser_full',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        name: '$_id.browser_full',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'browser_full', factor);   
+        }
+
+        /**
+         * channel性能因子
+         * @return promise
+         */
+        funcObj.channel = function channel() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        'channel_id': '$channel_id',
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            channel_id: '$channel_id',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        id: '$_id.channel_id',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'channel', factor);
+        }
+
+        /**
+         * networkPhase性能因子
+         * @return promise
+         */
+        funcObj.networkPhase = function networkPhase() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        network_phase: '$network.phase',
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            network_phase: '$network_phase',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        name: '$_id.network_phase',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'network_phase', factor);
+        }
+
+        /**
+         * networkIsp性能因子
+         * @return promise
+         */
+        funcObj.networkIsp = function networkIsp() {
+            var factor = [
+                {},
+                {
+                    $project: {
+                        network_isp: '$network.isp',
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            network_isp: '$network_isp',
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        name: '$_id.network_isp',
+                    },
+                },
+            ];
+            return reduceFunc.call(null, 'network_isp', factor);
+        }       
+
+        return funcObj[factorFuncName];
+    };
+
+    pri.statJsMeta = function statJsMeta() {
         /**
          * 聚合字段
          * @return object
@@ -383,228 +600,18 @@ function Report() {
                 });
             }
 
-            /**
-             * osFamily性能因子
-             * @return promise
-             */
-            function osFamily() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            'os_family': '$os.family',
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                os_family: '$os_family',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.os_family',
-                        },
-                    },
-                ];
-                return timing('os_family', factor);               
-            }
-
-            /**
-             * osFull性能因子
-             * @return promise
-             */
-            function osFull() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            os_full: {
-                                $concat: [
-                                    '$os.family',
-                                    '$os.major',
-                                    '.',
-                                    '$os.minor',
-                                ],
-                            },                                
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                os_full: '$os_full',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.os_full',
-                        },
-                    },
-                ];
-                return timing('os_full', factor);                
-            }
-
-            /**
-             * browserFamily性能因子
-             * @return promise
-             */
-            function browserFamily() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            browser_family: '$browser.family',
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                browser_family: '$browser_family',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.browser_family',
-                        },
-                    },
-                ];
-                return timing('browser_family', factor);
-            }
-
-            /**
-             * browserFull性能因子
-             * @return promise
-             */
-            function browserFull() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            browser_full: {
-                                $concat: [
-                                    '$browser.family',
-                                    '$browser.major',
-                                    '.',
-                                    '$browser.minor',
-                                ],
-                            },                                
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                browser_full: '$browser_full',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.browser_full',
-                        },
-                    },
-                ];
-                return timing('browser_full', factor);   
-            }
-
-            /**
-             * channel性能因子
-             * @return promise
-             */
-            function channel() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            'channel_id': '$channel_id',
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                channel_id: '$channel_id',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            id: '$_id.channel_id',
-                        },
-                    },
-                ];
-                return timing('channel', factor);
-            }
-
-            /**
-             * networkPhase性能因子
-             * @return promise
-             */
-            function networkPhase() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            network_phase: '$network.phase',
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                network_phase: '$network_phase',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.network_phase',
-                        },
-                    },
-                ];
-                return timing('network_phase', factor);
-            }
-
-            /**
-             * networkIsp性能因子
-             * @return promise
-             */
-            function networkIsp() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            network_isp: '$network.isp',
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                network_isp: '$network_isp',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.network_isp',
-                        },
-                    },
-                ];
-                return timing('network_isp', factor);
-            }
-
             // 聚合数据
             return co(function *() {
                 var reduceResult = yield [
                     pv(),
                     uv(),
-                    osFamily(),
-                    osFull(),
-                    browserFamily(),
-                    browserFull(),
-                    channel(),
-                    networkPhase(),
-                    networkIsp(),
+                    pri.factorReduce('osFamily', timing)(),
+                    pri.factorReduce('osFull', timing)(),
+                    pri.factorReduce('browserFamily', timing)(),
+                    pri.factorReduce('browserFull', timing)(),
+                    pri.factorReduce('channel', timing)(),
+                    pri.factorReduce('networkPhase', timing)(),
+                    pri.factorReduce('networkIsp', timing)(),
                     timing(),
                 ];
 
@@ -645,7 +652,6 @@ function Report() {
 
                 try {
                     var result = yield upsertPromiseList;
-                    console.log(result);
                 } catch (err) {
                     console.log(err);
                 }
@@ -659,7 +665,7 @@ function Report() {
     /**
      * 聚合Js报错数据
      */
-    pri.statJsError = function reduceJsError() {
+    pri.statJsError = function statJsError() {
         function reduce() {
             /**
              * 聚合js报错数据
@@ -738,81 +744,11 @@ function Report() {
                 });
             }
 
-            /**
-             * 系统报错因子
-             */
-            function osFull() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            os_full: {
-                                $concat: [
-                                    '$os.family',
-                                    '$os.major',
-                                    '.',
-                                    '$os.minor',
-                                ],
-                            },                                
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                os_full: '$os_full',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.os_full',
-                        },
-                    },
-                ];
-
-                return jsError('os_full', factor);
-            }
-
-            /**
-             * browserFull报错因子
-             * @return promise
-             */
-            function browserFull() {
-                var factor = [
-                    {},
-                    {
-                        $project: {
-                            browser_full: {
-                                $concat: [
-                                    '$browser.family',
-                                    '$browser.major',
-                                    '.',
-                                    '$browser.minor',
-                                ],
-                            },                                
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: {
-                                browser_full: '$browser_full',
-                            }
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$_id.browser_full',
-                        },
-                    },
-                ];
-                return jsError('browser_full', factor);   
-            }
-
             // 聚合数据
             return co(function *() {
                 var reduceResult = yield [
-                    osFull(),
-                    browserFull(),
+                    pri.factorReduce('osFull', jsError)(),
+                    pri.factorReduce('browserFull', jsError)(),
                     jsError(),
                 ];
 
@@ -825,8 +761,6 @@ function Report() {
                 var reduceResult = _.reduce(yield reduce(), function(result, item) {
                     return _.merge(result, item)
                 }, {});
-
-                GLB.app.logger.info(JSON.stringify(reduceResult));
 
                 var dateString = moment(pri.startDate).format('YYYY-MM-DD');
                 var upsertPromiseList = [];
@@ -849,11 +783,9 @@ function Report() {
 
                 try {
                     var result = yield upsertPromiseList;
-                    console.log(result);
                 } catch (err) {
                     console.log(err);
                 }
-
             });
         }
 
@@ -863,8 +795,128 @@ function Report() {
     /**
      * 聚合Api报错数据
      */
-    pri.statApiError = function reduceApiError() {
+    pri.statApiError = function statApiError() {
+        function reduce() {
+            function apiError(key, factor) {
+                var pipeline = [
+                    {
+                        $match: {
+                            created_time: {
+                                $gte: pri.startDate,
+                                $lte: pri.endDate,
+                            }
+                        },
+                    },
+                    {
+                        $project: {
+                            page_id: 1,
+                            api: 1,
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                page_id: '$page_id',
+                                api_request_url: '$api.request_url',
+                                api_request_method: '$api.request_method',
+                                api_status_code: '$api.status_code',
+                                api_request_body: '$api.request_body',
+                                api_response_body: '$api.response_body',
+                            },
+                            qty: {
+                                $sum: 1,
+                            },
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            page_id: '$_id.page_id',
+                            api: {
+                                request_url: '$_id.api_request_url',
+                                request_method: '$_id.api_request_method',
+                                status_code: '$_id.api_status_code',
+                                request_body: '$_id.api_request_body',
+                                response_body: '$_id.api_response_body',
+                            },
+                            qty: 1,
+                        },
+                    },
+                ]; // pipeline
 
+                if (_.isArray(factor)) {
+                    pipeline = _.merge(pipeline, factor);
+                }
+
+                return co(function *() {
+                    try {
+                        var docs = yield pri.reportApiErrorModel.aggregate(pipeline).exec();
+                        var result = {};
+                        _.forEach(docs, function(item) {
+                            var pageId = item.page_id;
+                            delete item.page_id;
+
+                            if (_.isArray(factor)) {
+                                result[pageId] = {};
+                                result[pageId][key] = item;
+                            } else {
+                                result[pageId] = item;
+                            }
+                        });
+                        return result;
+                    } catch(err) {
+                        console.log(err);
+                    }
+                });                 
+            }
+            // 聚合数据
+            return co(function *() {
+                var reduceResult = yield [
+                    pri.factorReduce('osFull', apiError)(),
+                    pri.factorReduce('browserFull', apiError)(),
+                    apiError(),
+                ];
+
+                return reduceResult;
+            });
+
+        }
+
+        function upsert() {
+            return co(function *() {
+                var reduceResult = _.reduce(yield reduce(), function(result, item) {
+                    return _.merge(result, item)
+                }, {});
+
+                var dateString = moment(pri.startDate).format('YYYY-MM-DD');
+                var upsertPromiseList = [];
+                for(var pageId in reduceResult) {
+                    var condition = {
+                        page_id: +pageId, 
+                        data_string: dateString,
+                    }; 
+                    var option = {
+                        upsert: true,
+                    };
+
+                    var pageItem = reduceResult[pageId];
+                    pageItem['page_id'] = +pageId;
+                    pageItem['date_string'] = dateString;
+                    pageItem['created_time'] = new Date();
+
+                    upsertPromiseList.push(pri.statApiErrorModel.update(condition, pageItem, option).exec());
+                }
+
+                try {
+                    var result = yield upsertPromiseList;
+                    console.log(result);
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        upsert();
     }
 
     /**
@@ -904,7 +956,8 @@ function Report() {
         // 处理统计日期
         pri.processDate(params[0], params[1]);
 
-        // pri.statJsMeta();
+        // 执行三种统计
+        pri.statJsMeta();
         pri.statJsError();
         pri.statApiError();
     }

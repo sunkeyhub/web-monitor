@@ -99,24 +99,10 @@ var reportApiErrorSchema = new Schema({
     },
     msg: {
         type: String,
-        required: true,
-    },
-    file: {
-        path: {
-            type: String,
-            default: '',
-        },
-        line: {
-            type: Number,
-            default: 0,
-        },
-        column: {
-            type: Number,
-            default: 0,
-        }
+        default: '',
     },
     api: {
-        request_url: {
+       request_url: {
             type: String,
             required: true,
         },
@@ -124,13 +110,13 @@ var reportApiErrorSchema = new Schema({
             type: String,
             required: true,
         },
-        request_body: {
-            type: String, 
-            default: '',
-        },
         status_code: {
             type: Number,
             required: true,
+        },
+        request_body: {
+            type: String, 
+            default: '',
         },
         response_body: {
             type: String,

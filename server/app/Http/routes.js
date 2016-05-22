@@ -24,23 +24,35 @@ module.exports = [
         path: '/admin',
         list: [
             {
-                comment: '总览数据路由',
+                comment: '总览数据接口',
                 method: 'GET',
                 path: '/stat/overview',
                 route: 'StatController@overview',
             },
             {
-                comment: '性能数据路由',
+                comment: '性能数据接口',
                 method: 'GET',
-                path: '/stat/overview',
+                path: '/stat/timing',
                 route: 'StatController@timing',
             },
             {
-                comment: '报错数据路由',
+                comment: 'Js报错数据接口',
                 method: 'GET',
-                path: '/stat/err',
-                route: 'StatController@err',
-            }
+                path: '/stat/jsError',
+                route: 'StatController@jsError',
+            },
+            {
+                comment: 'Api报错数据接口',
+                method: 'GET',
+                path: '/stat/apiError',
+                route: 'StatController@apiError',
+            },
+            {
+                comment: '页面列表接口',
+                method: 'GET',
+                path: '/common/pageList',
+                route: 'CommonController@pageList',
+            },
         ],
     },
 ];

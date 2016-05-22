@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-class ErrSection extends Component {
+class ApiErrorSection extends Component {
     render() {
         return (
             <h5>ErrorViewSection</h5>
@@ -11,8 +11,8 @@ class ErrSection extends Component {
 
 function mapStateToProps(state) {
     return {
-        err: state.stat.err
+        apiError: state.stat.apiError
     }
 }
 
-export default connect(mapStateToProps)(ErrSection);
+export default connect(mapStateToProps)(ApiErrorSection);

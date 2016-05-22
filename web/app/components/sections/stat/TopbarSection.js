@@ -1,17 +1,44 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Select, DatePicker } from 'antd';
+import _ from 'lodash';
 var moment = require('moment');
 
 const Option = Select.Option;
 const RangePicker = DatePicker.RangePicker;
 
+import { getPageList, getSectionData } from '../../../actions/stat';
+
 export default class TopbarSection extends Component {
+    componentDidMount() {
+        this.props.dispatch(getPageList());
+    }
+
+    componentDidUpdate() {
+        var {
+            startDate,
+            endDate,
+            pageList,
+            isInit,
+        } = this.props;
+        if (isInit) {
+            var defaultPage = pageList && pageList.length && pageList[0]; 
+            if (defaultPage) {
+                this.props.dispatch(getSectionData(defaultPage.page_id, startDate, endDate))
+            }
+        }
+    }
+
     render() {
-        var start = moment().subtract(7, 'day').toDate();
-        var today = moment().toDate();
-        var defaultDate = [start, today];
-        
+        var {
+            startDate,
+            endDate,
+            pageList,
+        } = this.props;
+
+        var defaultDate = [startDate, endDate];
+        var defaultPage = pageList && pageList.length && pageList[0]; 
+
         return (
             <header className="g-topbar">
                 <div className="g-left">
@@ -21,11 +48,12 @@ export default class TopbarSection extends Component {
                 </div>
                 <div className="g-right">
                     <div className="u-select-page">
-                        <Select className="u-select" value="页面一">
-                            <Option value="页面一">页面一</Option>
-                            <Option value="页面二">页面二</Option>
-                            <Option value="页面三">页面三</Option>
-                            <Option value="页面四">页面四</Option>
+                        <Select className="u-select" value={defaultPage && defaultPage.name} onChange={this.onPageChange}>
+                            { 
+                                _.map(pageList, function(val, index) {
+                                    return (<Option key={val.page_id} value={val.page_id}>{val.name}</Option>);
+                                })
+                            }
                         </Select>
                     </div>
                     <div className="u-select-date">
@@ -35,12 +63,32 @@ export default class TopbarSection extends Component {
             </header>
         );
     }
+
+    /**
+     * 页面下拉回调
+     * @return null
+     */
+    onPageChange() {
+        
+    }
+
+    /**
+     * 日期下拉回调
+     * @return null
+     */
+    onDateChange() {
+
+    }
 }
 
 function mapStateToProps(state) {
+    var topbar = state.stat.topbar;
     return {
-        overstat: state.stat.topbar
-    }
+        startDate: topbar.startDate,
+        endDate: topbar.endDate,
+        pageList: topbar.pageList,
+        isInit: topbar.isInit,
+    }        
 }
 
 export default connect(mapStateToProps)(TopbarSection);

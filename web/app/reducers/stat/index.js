@@ -10,12 +10,14 @@ import topbar from './topbar';
 import sidebar from './sidebar';
 import overview from './overview';
 import timing from './timing';
-import err from './err';
+import jsError from './jsError';
+import apiError from './apiError';
 
 export default combineReducers({
     topbar,
     sidebar,
     overview,
     timing,
-    err,
+    jsError,
+    apiError,
 });

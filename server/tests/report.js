@@ -217,16 +217,11 @@ describe('ApiError', function() {
                 page_id: pageId[_.random(0, 2)],
                 page_url: 'http://www.baidu.com',
                 msg: 'Uncaught ReferenceError: c is not defined',
-                file: {
-                    path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                    line: 14,
-                    column: 9,
-                },
                 api: {
                     request_url: 'http://www.baidu.com',
                     request_method: 'POST',
-                    request_body: 'xxx',
                     status_code: 500,
+                    request_body: 'xxx',
                     response_body: 'ooo',
                 },
             },
