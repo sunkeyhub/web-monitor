@@ -253,7 +253,8 @@ function StatController() {
     pub.timing = function timing() {
         var factor = pub.request.query.factor;
         return co(function *() {
-            return yield pri.reduceTiming(factor);
+            var data = yield pri.reduceTiming(factor);
+            return pub.response.json({code: 200, data: data});
         });
     }
 
@@ -280,7 +281,7 @@ function StatController() {
                         date_string: '$date_string',
                     },
                     timing: {
-                        $avg: '$timing_performance.total',
+                        $avg: '$timing_period.total',
                     },
                 },
             },
@@ -298,27 +299,27 @@ function StatController() {
             },
         ];
 
-        var pOsAll = [
+        var pOsFull = [
             {
                 $match: match,
             },
             {
                 $project: {
                     date_string: 1,
-                    os_all: 1,
+                    os_full: 1,
                 }
             },
             {
-                $unwind: '$os_all',
+                $unwind: '$os_full',
             },
             {
                 $group: {
                     _id: {
                         date_string: '$date_string',
-                        name: '$name',
+                        name: '$os_full.name',
                     },
                     timing: {
-                        $avg: '$timing_performance.total',
+                        $avg: '$os_full.timing_period.total',
                     },
                 },
             },
@@ -337,9 +338,22 @@ function StatController() {
             },
         ];
 
-        var pBrowserAll = _.cloneDeep(pOsAll);
-        pBrowser[2] = {
-            $unwind: '$browser_all',
+        var pBrowserFull = _.cloneDeep(pOsFull);
+        pBrowserFull[1]['$project'] = {
+            browser_full: 1,
+            date_string: 1,
+        };
+        pBrowserFull[2] = {
+            $unwind: '$browser_full',
+        };
+        pBrowserFull[3]['$group'] = {
+            _id: {
+                date_string: '$date_string',
+                name: '$browser_full.name',           
+            },
+            timing: {
+                $avg: '$browser_full.timing_period.total',
+            },
         };
 
         switch (factor) {
@@ -347,19 +361,37 @@ function StatController() {
                 var pipeline = pAll;
                 break;
             }
-            case 'os_all': {
-                var pipeline = pOsAll;
+            case 'os_full': {
+                var pipeline = pOsFull;
                 break;
             }
-            case 'browser_all': {
-                var pipeline = pBrowserAll;
+            case 'browser_full': {
+                var pipeline = pBrowserFull;
                 break;
             }
         }
 
         return co(function *() {
-            var result = pri.statJsMetaModel.aggregate(pipeline).exec(),
-            
+            var result = yield pri.statJsMetaModel.aggregate(pipeline).exec();
+            GLB.app.logger.info(JSON.stringify(result));
+            var timing = {
+                trend: {},
+                period: {},
+                performance: {},
+            };
+            if (factor === 'all') {
+                timing.trend.all = {};
+                _.forEach(result, function(item) {
+                    timing.trend.all[moment(item.date_string).format('MM-DD')] = item.timing;
+                });
+            } else {
+                _.forEach(result, function(item) {
+                    timing.trend[item.name] = {};
+                    timing.trend[item.name][moment(item.date_string).format('MM-DD')] = item.timing;
+                });
+            }
+
+            return timing;
         });
     }
 }

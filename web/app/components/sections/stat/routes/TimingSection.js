@@ -10,13 +10,46 @@ const Option = Select.Option;
 
 class TimingSection extends Component {
     componentDidMount() {
-        var trendDOM = ReactDOM.findDOMNode(this.refs.trendChart);
-        var periodDOM = ReactDOM.findDOMNode(this.refs.periodChart);
-        var performanceDOM = ReactDOM.findDOMNode(this.refs.performanceChart);
+        var lineChartTpl = {
+            title: {
+                text: ''
+            },
+            tooltip : {
+                trigger: 'axis',
+            },
+            legend: {
+                data:['系列名称'],
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    data : []
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+            ],
+        };
 
-        this.trendChart = echarts.init(trendDOM);
-        this.periodChart = echarts.init(periodDOM);
-        this.performanceChart = echarts.init(performanceDOM);
+        this.trendOption = _.cloneDeep(lineChartTpl);
+        this.periodOption = _.cloneDeep(lineChartTpl);
+        this.performaceOption = _.cloneDeep(lineChartTpl);
     }
 
     componentWillUpdate(nextProps) {
@@ -30,7 +63,35 @@ class TimingSection extends Component {
     }
 
     refreshChart(props) {
+        this.trendOption.legend.data = _.keys(props.trend);
+        var seriesItemTpl = this.trendOption.series.shift();
+        var self = this;
+        self.trendOption.series = [];
+        _.forEach(this.trendOption.legend.data, function(name) {
+            let pushItem = {
+                name: name,
+                type: 'line',
+                label: {
+                    normal: {
+                        show: true,
+                    }
+                },
+                data: _.values(props.trend[name]),
+            };
 
+            self.trendOption.xAxis[0].data = _.keys(props.trend[name]);
+            self.trendOption.series.push(pushItem);
+        });
+
+        var trendDOM = ReactDOM.findDOMNode(this.refs.trendChart);
+        var periodDOM = ReactDOM.findDOMNode(this.refs.periodChart);
+        var performanceDOM = ReactDOM.findDOMNode(this.refs.performanceChart);
+
+        this.trendChart = echarts.init(trendDOM);
+        this.periodChart = echarts.init(periodDOM);
+        this.performanceChart = echarts.init(performanceDOM);
+
+        this.trendChart.setOption(this.trendOption);
     }
 
     onFactorChange(val) {

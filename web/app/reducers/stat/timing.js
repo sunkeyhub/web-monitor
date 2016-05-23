@@ -25,7 +25,7 @@ export default function timing(state=initialState, action) {
         }
         case 'UPDATE_TIMING_SECTION': {
             if (action.data.code == 200) {
-
+                return Object.assign({}, state, action.data.data);
             }
         }
         case 'CHANGE_TIMING_SECTION': {

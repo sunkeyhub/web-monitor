@@ -44,7 +44,7 @@ function ReportController() {
                 pri.serviceOption = queryJson.option;
                 pri.serviceData = queryJson.data;
 
-                if (_.findIndex(pri.report.page, ['page_id', pri.serviceData.page_id]) < 0) {
+                if (_.findIndex(pri.report.page, ['id', pri.serviceData.page_id]) < 0) {
                     return pub.response.jsonp({code: 400, msg: 'page_id 不存在'});
                 }
 
