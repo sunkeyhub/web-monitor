@@ -283,6 +283,51 @@ function StatController() {
                     timing: {
                         $avg: '$timing_period.total',
                     },
+                    'timing_performance-white_screen': {
+                        $avg: '$timing_performance.white_screen',
+                    },
+                    'timing_performance-first_screen': {
+                        $avg: '$timing_performance.first_screen',
+                    },
+                    'timing_performance-dom_ready': {
+                        $avg: '$timing_performance.dom_ready',
+                    },
+                    'timing_performance-window_onload': {
+                        $avg: '$timing_performance.window_onload',
+                    },
+                    'timing_performance-total': {
+                        $avg: '$timing_performance.total',
+                    },
+                    'timing_period-cache': {
+                        $avg: '$timing_period.cache',
+                    },
+                    'timing_period-dns': {
+                        $avg: '$timing_period.dns',
+                    },
+                    'timing_period-tcp': {
+                        $avg: '$timing_period.tcp',
+                    },
+                    'timing_period-request': {
+                        $avg: '$timing_period.request',
+                    },
+                    'timing_period-response': {
+                        $avg: '$timing_period.response',
+                    },
+                    'timing_period-dom_parse': {
+                        $avg: '$timing_period.dom_parse',
+                    },
+                    'timing_period-script': {
+                        $avg: '$timing_period.script',
+                    },
+                    'timing_period-dom_ready': {
+                        $avg: '$timing_period.dom_ready',
+                    },
+                    'timing_period-resource': {
+                        $avg: '$timing_period.resource',
+                    },
+                    'timing_period-window_onload': {
+                        $avg: '$timing_period.window_onload',
+                    },
                 },
             },
             {
@@ -290,6 +335,24 @@ function StatController() {
                     _id: 0,
                     date_string: '$_id.date_string',
                     timing: 1,
+                    timing_period: {
+                        cache: '$timing_period-cache',
+                        dns: '$timing_period-dns',
+                        tcp: '$timing_period-tcp',
+                        request: '$timing_period-request',
+                        response: '$timing_period-response',
+                        dom_parse: '$timing_period-dom_parse',
+                        script: '$timing_period-script',
+                        dom_ready: '$timing_period-dom_ready',
+                        resource: '$timing_period-resource',
+                        window_onload: '$timing_period-window_onload',
+                    },
+                    timing_performance: {
+                        white_screen: '$timing_performance-white_screen',
+                        first_screen: '$timing_performance-first_screen',
+                        dom_ready: '$timing_performance-dom_ready',
+                        window_onload: '$timing_performance-window_onload',
+                    }, 
                 },
             },
             {
@@ -321,6 +384,51 @@ function StatController() {
                     timing: {
                         $avg: '$os_full.timing_period.total',
                     },
+                    'timing_performance-white_screen': {
+                        $avg: '$os_full.timing_performance.white_screen',
+                    },
+                    'timing_performance-first_screen': {
+                        $avg: '$os_full.timing_performance.first_screen',
+                    },
+                    'timing_performance-dom_ready': {
+                        $avg: '$os_full.timing_performance.dom_ready',
+                    },
+                    'timing_performance-window_onload': {
+                        $avg: '$os_full.timing_performance.window_onload',
+                    },
+                    'timing_performance-total': {
+                        $avg: '$os_full.timing_performance.total',
+                    },
+                    'timing_period-cache': {
+                        $avg: '$os_full.timing_period.cache',
+                    },
+                    'timing_period-dns': {
+                        $avg: '$os_full.timing_period.dns',
+                    },
+                    'timing_period-tcp': {
+                        $avg: '$os_full.timing_period.tcp',
+                    },
+                    'timing_period-request': {
+                        $avg: '$os_full.timing_period.request',
+                    },
+                    'timing_period-response': {
+                        $avg: '$os_full.timing_period.response',
+                    },
+                    'timing_period-dom_parse': {
+                        $avg: '$os_full.timing_period.dom_parse',
+                    },
+                    'timing_period-script': {
+                        $avg: '$os_full.timing_period.script',
+                    },
+                    'timing_period-dom_ready': {
+                        $avg: '$os_full.timing_period.dom_ready',
+                    },
+                    'timing_period-resource': {
+                        $avg: '$os_full.timing_period.resource',
+                    },
+                    'timing_period-window_onload': {
+                        $avg: '$os_full.timing_period.window_onload',
+                    },
                 },
             },
             {
@@ -329,6 +437,24 @@ function StatController() {
                     name: '$_id.name',
                     date_string: '$_id.date_string',
                     timing: 1,
+                    timing_period: {
+                        cache: '$timing_period-cache',
+                        dns: '$timing_period-dns',
+                        tcp: '$timing_period-tcp',
+                        request: '$timing_period-request',
+                        response: '$timing_period-response',
+                        dom_parse: '$timing_period-dom_parse',
+                        script: '$timing_period-script',
+                        dom_ready: '$timing_period-dom_ready',
+                        resource: '$timing_period-resource',
+                        window_onload: '$timing_period-window_onload',
+                    },
+                    timing_performance: {
+                        white_screen: '$timing_performance-white_screen',
+                        first_screen: '$timing_performance-first_screen',
+                        dom_ready: '$timing_performance-dom_ready',
+                        window_onload: '$timing_performance-window_onload',
+                    },
                 },
             },
             {
@@ -349,10 +475,55 @@ function StatController() {
         pBrowserFull[3]['$group'] = {
             _id: {
                 date_string: '$date_string',
-                name: '$browser_full.name',           
+                name: '$browser_full.name',         
             },
             timing: {
                 $avg: '$browser_full.timing_period.total',
+            },
+            'timing_performance-white_screen': {
+                $avg: '$browser_full.timing_performance.white_screen',
+            },
+            'timing_performance-first_screen': {
+                $avg: '$browser_full.timing_performance.first_screen',
+            },
+            'timing_performance-dom_ready': {
+                $avg: '$browser_full.timing_performance.dom_ready',
+            },
+            'timing_performance-window_onload': {
+                $avg: '$browser_full.timing_performance.window_onload',
+            },
+            'timing_performance-total': {
+                $avg: '$browser_full.timing_performance.total',
+            },
+            'timing_period-cache': {
+                $avg: '$browser_full.timing_period.cache',
+            },
+            'timing_period-dns': {
+                $avg: '$browser_full.timing_period.dns',
+            },
+            'timing_period-tcp': {
+                $avg: '$browser_full.timing_period.tcp',
+            },
+            'timing_period-request': {
+                $avg: '$browser_full.timing_period.request',
+            },
+            'timing_period-response': {
+                $avg: '$browser_full.timing_period.response',
+            },
+            'timing_period-dom_parse': {
+                $avg: '$browser_full.timing_period.dom_parse',
+            },
+            'timing_period-script': {
+                $avg: '$browser_full.timing_period.script',
+            },
+            'timing_period-dom_ready': {
+                $avg: '$browser_full.timing_period.dom_ready',
+            },
+            'timing_period-resource': {
+                $avg: '$browser_full.timing_period.resource',
+            },
+            'timing_period-window_onload': {
+                $avg: '$browser_full.timing_period.window_onload',
             },
         };
 
@@ -372,8 +543,11 @@ function StatController() {
         }
 
         return co(function *() {
-            var result = yield pri.statJsMetaModel.aggregate(pipeline).exec();
-            GLB.app.logger.info(JSON.stringify(result));
+            try {
+                var result = yield pri.statJsMetaModel.aggregate(pipeline).exec();
+            } catch(err) {
+                console.log(err);
+            }
             var timing = {
                 trend: {},
                 period: {},
@@ -381,13 +555,56 @@ function StatController() {
             };
             if (factor === 'all') {
                 timing.trend.all = {};
+                timing.period.all = {};
+                timing.performance.all = {};
                 _.forEach(result, function(item) {
                     timing.trend.all[moment(item.date_string).format('MM-DD')] = item.timing;
+                    _.forOwn(item.timing_period, function(value, key) {
+                        timing.period.all[key] = {};
+                        timing.period.all[key][moment(item.date_string).format('MM-DD')] = value;
+                    });
+                    _.forOwn(item.timing_performance, function(value, key) {
+                        timing.performance.all[key] = {};
+                        timing.performance.all[key][moment(item.date_string).format('MM-DD')] = value;
+                    });
                 });
             } else {
                 _.forEach(result, function(item) {
-                    timing.trend[item.name] = {};
+                    if (_.isUndefined(timing.trend[item.name])) {
+                        timing.trend[item.name] = {};
+                    }
+                    if (_.isUndefined(timing.period[item.name])) {
+                        timing.period[item.name] = {};
+                    }
+                    if (_.isUndefined(timing.performance[item.name])) {
+                        timing.performance[item.name] = {};
+                    }
                     timing.trend[item.name][moment(item.date_string).format('MM-DD')] = item.timing;
+                    _.forOwn(item.timing_period, function(value, key) {
+                        if (_.isUndefined(timing.period[item.name][key])) {
+                            timing.period[item.name][key] = {};
+                        }
+                        timing.period[item.name][key][moment(item.date_string).format('MM-DD')] = value;
+                    });
+                    _.forOwn(item.timing_performance, function(value, key) {
+                        if (_.isUndefined(timing.performance[item.name][key])) {
+                            timing.performance[item.name][key] = {};
+                        }
+                        timing.performance[item.name][key][moment(item.date_string).format('MM-DD')] = value;
+                    });
+                });
+
+                _.forOwn(timing.period, function(value, key) {
+                    _.forOwn(value, function(subVal, subKey) {
+                        var arr = _.values(subVal)
+                       timing.period[key][subKey] = _.sum(arr)/arr.length;
+                    });
+                });
+                _.forOwn(timing.performance, function(value, key) {
+                    _.forOwn(value, function(subVal, subKey) {
+                        var arr = _.values(subVal)
+                        timing.performance[key][subKey] = _.sum(arr)/arr.length;
+                    });
                 });
             }
 

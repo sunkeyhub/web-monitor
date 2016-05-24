@@ -47,9 +47,39 @@ class TimingSection extends Component {
             ],
         };
 
+        var barChartTpl = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                },
+            },
+            legend: {
+                data: [],
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true,
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: [],
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                },
+            ],
+            series: []
+        };
+
         this.trendOption = _.cloneDeep(lineChartTpl);
-        this.periodOption = _.cloneDeep(lineChartTpl);
-        this.performaceOption = _.cloneDeep(lineChartTpl);
+        this.periodOption = _.cloneDeep(barChartTpl);
+        this.performaceOption = _.cloneDeep(barChartTpl);
     }
 
     componentWillUpdate(nextProps) {
