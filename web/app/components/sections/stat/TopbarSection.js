@@ -38,8 +38,8 @@ export default class TopbarSection extends Component {
         return (
             <header className="g-topbar">
                 <div className="g-left">
-                    <div className="m-logo">
-
+                    <div className="u-logo">
+                        <span className="text">JediMonitor</span>
                     </div>
                 </div>
                 <div className="g-right">

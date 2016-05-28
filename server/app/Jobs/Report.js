@@ -4,10 +4,6 @@
  * @author : Sunkey
  */
 
-var _ = require('lodash');
-var co = require('co');
-var moment = require('moment');
-
 function Report() {
     var pub = this;
     var pri = {};

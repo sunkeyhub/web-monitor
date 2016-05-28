@@ -20,6 +20,19 @@
         .g-left {
             display: flex;
             flex: none;
+
+            .u-logo {
+                display: flex;
+                .text {
+                    color: $dark-primary-color;
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+
+                .img {
+
+                }
+            }
         }
 
         .g-right {

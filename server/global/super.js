@@ -5,4 +5,4 @@
  */
 
 // co 可全局访问
-co = require('co');
+global.co = require('co');

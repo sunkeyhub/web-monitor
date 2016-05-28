@@ -6,9 +6,9 @@
 
 require('./super');
 
-var glb = {
+var GLB = {
 	FUNC: {},
 	CONS: {},
 };
 
-module.exports = glb;
+module.exports = GLB;

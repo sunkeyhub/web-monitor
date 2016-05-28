@@ -4,11 +4,9 @@
  * @author : Sunkey
  */
 
-var _ = require('lodash');
 var BaseController = require(GLB.CONS.COMPONENT_PATH + '/Controllers/BaseController');
 var report = require(GLB.CONS.ROOT_PATH + '/app/Data/Report');
 var factors = require(GLB.CONS.ROOT_PATH + '/app/Data/Factors');
-var moment = require('moment');
 
 function CommonController() {
     BaseController.call(this);

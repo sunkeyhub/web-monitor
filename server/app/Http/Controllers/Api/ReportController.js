@@ -4,8 +4,6 @@
  * @author : Sunkey
  */
 
-var co = require('co');
-var _ = require('lodash');
 var useragent = require('useragent');
 
 function ReportController() {

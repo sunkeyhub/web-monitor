@@ -3,9 +3,12 @@
  *
  * @author : Sunkey
  */
+ 
+// 宿主环境绑定
+global || (global = window);
 
 // lodash 可全局访问 
-_ = require('lodash');
+global._ = require('lodash');
 
 // 对象字段命名小驼峰=>下划线
 _.camel2under = function(obj) {
@@ -38,3 +41,5 @@ _.under2camel = function(obj) {
 
 	return camelObj;
 }
+
+global.moment = require('moment');
