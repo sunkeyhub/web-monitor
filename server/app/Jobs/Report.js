@@ -494,8 +494,7 @@ function Report() {
 
                         return result;
                     } catch(err) {
-                        console.log(err);
-                        process.exit();
+                        throw err;
                     }
                 });
             }
@@ -543,7 +542,7 @@ function Report() {
                         });
                         return result;
                     } catch(err) {
-                        console.log(err);
+                        throw err;
                     }
                 });
             }
@@ -592,6 +591,7 @@ function Report() {
                         });
                         return result;
                     } catch(err) {
+                        throw err;
                     }
                 });
             }
@@ -625,8 +625,6 @@ function Report() {
                     return _.merge(result, item)
                 }, {});
 
-                GLB.app.logger.info(JSON.stringify(reduceResult));
-
                 var dateString = moment(pri.startDate).format('YYYY-MM-DD');
                 var upsertPromiseList = [];
                 for(var pageId in reduceResult) {
@@ -648,14 +646,15 @@ function Report() {
 
                 try {
                     var result = yield upsertPromiseList;
+                    return result;
                 } catch (err) {
-                    console.log(err);
+                    throw err;
                 }
 
             });
         }
 
-        upsert();
+        return upsert();
     }
 
     /**
@@ -696,6 +695,9 @@ function Report() {
                             qty: {
                                 $sum: 1,
                             },
+                            latest_time: {
+                                $max: '$created_time',
+                            }
                         },
                     },
                     {
@@ -723,11 +725,11 @@ function Report() {
                         var result = {};
                         _.forEach(docs, function(item) {
                             var pageId = item.page_id;
-                            delete item.page_id;
-
+                            
+                            _.unset(item, 'page_id');
                             if (_.isArray(factor)) {
-                                result[pageId] = {};
-                                result[pageId][key] = item;
+                                _.isUndefined(result[pageId]) && _.set(result, `${pageId}.${key}`, []);
+                                result[pageId][key].push(item);
                             } else {
                                 result[pageId] = item;
                             }
@@ -735,7 +737,7 @@ function Report() {
 
                         return result;
                     } catch(err) {
-                        console.log(err);
+                        throw err;
                     }
                 });
             }
@@ -779,13 +781,14 @@ function Report() {
 
                 try {
                     var result = yield upsertPromiseList;
+                    return result;
                 } catch (err) {
-                    console.log(err);
+                    throw err;
                 }
             });
         }
 
-        upsert();
+        return upsert();
     }
 
     /**
@@ -850,18 +853,17 @@ function Report() {
                         var result = {};
                         _.forEach(docs, function(item) {
                             var pageId = item.page_id;
-                            delete item.page_id;
-
+                            _.unset(item, 'page_id');
                             if (_.isArray(factor)) {
-                                result[pageId] = {};
-                                result[pageId][key] = item;
+                                _.isUndefined(result[pageId]) && _.set(result, `${pageId}.${key}`, []);
+                                result[pageId][key].push(item);
                             } else {
                                 result[pageId] = item;
                             }
                         });
                         return result;
                     } catch(err) {
-                        console.log(err);
+                        throw err; 
                     }
                 });                 
             }
@@ -905,14 +907,14 @@ function Report() {
 
                 try {
                     var result = yield upsertPromiseList;
-                    console.log(result);
+                    return result;
                 } catch (err) {
-                    console.log(err);
+                    throw err;
                 }
             });
         }
 
-        upsert();
+        return upsert();
     }
 
     /**
@@ -953,9 +955,20 @@ function Report() {
         pri.processDate(params[0], params[1]);
 
         // 执行三种统计
-        pri.statJsMeta();
-        pri.statJsError();
-        pri.statApiError();
+        return co(function *() {
+            try {
+                var result = yield [
+                    pri.statJsMeta(),
+                    pri.statJsError(),
+                    pri.statApiError(),
+                ];
+                console.log(result);
+            } catch (err) {
+                console.log(err);
+            }
+
+            process.exit(0);
+        });
     }
 }
 

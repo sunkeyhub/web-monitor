@@ -36,16 +36,28 @@ module.exports = [
                 route: 'StatController@timing',
             },
             {
-                comment: 'Js报错数据接口',
+                comment: 'Js 报错数据接口',
                 method: 'GET',
                 path: '/stat/jsError',
                 route: 'StatController@jsError',
             },
             {
-                comment: 'Api报错数据接口',
+                comment: 'Api 报错数据接口',
                 method: 'GET',
                 path: '/stat/apiError',
                 route: 'StatController@apiError',
+            },
+            {
+                comment: 'Js 报错数据接口',
+                method: 'GET',
+                path: '/stat/jsErrorList',
+                route: 'StatController@apiErrorList',
+            },
+            {
+                comment: 'Api 报错数据接口',
+                method: 'GET',
+                path: '/stat/apiErrorList',
+                route: 'StatController@apiErrorList',
             },
             {
                 comment: '页面列表接口',

@@ -23,14 +23,17 @@
 
             .u-logo {
                 display: flex;
+                align-items: center;
                 .text {
                     color: $dark-primary-color;
                     font-size: 20px;
                     font-weight: bold;
+                    margin-left: 15px;
                 }
 
                 .img {
-
+                    width: 40px;
+                    height: 40px;
                 }
             }
         }

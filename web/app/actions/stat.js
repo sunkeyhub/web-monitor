@@ -41,36 +41,39 @@ export function getSectionData(pageId, startDate, endDate) {
         var state = getState();
         startDate = moment(startDate).format('YYYY-MM-DD');
         endDate = moment(endDate).format('YYYY-MM-DD');
+        var queryObj = {
+            page_id: pageId,
+            start_date: startDate,
+            end_date: endDate,
+        };
 
         switch (state.routing.locationBeforeTransitions.pathname) {
             case '/stat/overview': {
-                var queryObj = {
-                    page_id: pageId,
-                    start_date: startDate,
-                    end_date: endDate,
-                };
                 var pathname = 'admin/stat/overview';
                 var actionType = 'UPDATE_OVERVIEW_SECTION';
                 break;
             }
-            case '/stat/timing': {
+            case '/stat/timing':
                 var queryObj = {
                     type: 'timing',
                 };
                 var pathname = 'admin/common/factorList';
                 var actionType = 'INIT_FACTOR_LIST';
                 break;
-            }
-            case '/stat/jsError': {
-                var pathname = 'admin/stat/jsError';
-                var actionType = 'UPDATE_JS_ERROR_SECTION';
+            case '/stat/jsError':
+                var queryObj = {
+                    type: 'jsError',
+                };
+                var pathname = 'admin/common/factorList';
+                var actionType = 'INIT_FACTOR_LIST';
                 break;
-            }
-            case '/stat/apiError': {
-                var pathname = 'admin/stat/apiError';
-                var actionType = 'UPDATE_API_ERROR_SECTION';
+            case '/stat/apiError':
+                var queryObj = {
+                    type: 'apiError',
+                };
+                var pathname = 'admin/common/factorList';
+                var actionType = 'INIT_FACTOR_LIST';
                 break;
-            }
         }
 
         var requestUrl = url.format({
@@ -141,6 +144,20 @@ export function changeTimingSection(data) {
         type: 'CHANGE_TIMING_SECTION',
         data: data,
     };
+}
+
+export function changeJsErrorSection(data) {
+    return {
+        type: 'CHANGE_JS_ERROR_SECTION',
+        data: data,
+    }; 
+}
+
+export function changeApiErrorSection(data) {
+    return {
+        type: 'CHANGE_API_ERROR_SECTION',
+        data: data,
+    }; 
 }
 
 /**

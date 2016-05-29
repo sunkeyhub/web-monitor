@@ -364,12 +364,6 @@ function StatController() {
                 $match: match,
             },
             {
-                $project: {
-                    date_string: 1,
-                    os_full: 1,
-                }
-            },
-            {
                 $unwind: '$os_full',
             },
             {
@@ -462,14 +456,10 @@ function StatController() {
         ];
 
         var pBrowserFull = _.cloneDeep(pOsFull);
-        pBrowserFull[1]['$project'] = {
-            browser_full: 1,
-            date_string: 1,
-        };
-        pBrowserFull[2] = {
+        pBrowserFull[1] = {
             $unwind: '$browser_full',
         };
-        pBrowserFull[3]['$group'] = {
+        pBrowserFull[2]['$group'] = {
             _id: {
                 date_string: '$date_string',
                 name: '$browser_full.name',         
@@ -543,7 +533,7 @@ function StatController() {
             try {
                 var result = yield pri.statJsMetaModel.aggregate(pipeline).exec();
             } catch(err) {
-                console.log(err);
+                throw err;
             }
             var timing = {
                 trend: {},
@@ -607,6 +597,280 @@ function StatController() {
 
             return timing;
         });
+    }
+
+    pub.jsError = function jsError() {
+        var factor = pub.request.query.factor;
+        return co(function *() {
+            try {
+                var data = yield pri.reduceJsError(factor);
+            } catch (err) {
+                GLB.app.logger.error(err);
+                throw err;
+            }
+            return pub.response.json({code: 200, data: data});
+        });
+    }
+
+    pri.reduceJsError = function(factor) {
+        var match = {
+            page_id: +pri.pageId,
+            date_string: {
+                $gte: pri.startDate,
+                $lte: pri.endDate,
+            },
+        };
+
+        var pAll = [
+            {
+                $match: match,
+            },
+            {
+                $group: {
+                    _id: {
+                        date_string: '$date_string',
+                    },
+                    js_error: {
+                        $sum: '$qty',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date_string: '$_id.date_string',
+                    js_error: 1,
+                },
+            },
+            {
+                $sort: {
+                    date_string: 1,
+                },
+            },
+        ];
+
+        var pOsFull = [
+            {
+                $match: match,
+            },
+            {
+                $unwind: '$os_full',
+            },
+            {
+                $group: {
+                    _id: {
+                        date_string: '$date_string',
+                        name: '$os_full.name',
+                    },
+                    js_error: {
+                        $sum: '$qty',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: '$_id.name',
+                    date_string: '$_id.date_string',
+                    js_error: 1,
+                },
+            },
+            {
+                $sort: {
+                    date_string: 1,
+                },
+            },
+        ];
+
+        var pBrowserFull = _.cloneDeep(pOsFull);
+        pBrowserFull[1] = {
+            $unwind: '$browser_full',
+        };
+        pBrowserFull[2]['$group']['_id'] = {
+            date_string: '$date_string',
+            name: '$browser_full.name',
+        };
+
+        switch (factor) {
+            case 'all': {
+                var pipeline = pAll;
+                break;
+            }
+            case 'os_full': {
+                var pipeline = pOsFull;
+                break;
+            }
+            case 'browser_full': {
+                var pipeline = pBrowserFull;
+                break;
+            }
+        }
+
+        return co(function *() {
+            try {
+                var result = yield pri.statJsErrorModel.aggregate(pipeline).exec();
+                var jsError = {
+                    trend: {},
+                };
+                if (factor === 'all') {
+                    jsError.trend.all = {};
+                    _.forEach(result, function(item) {
+                        jsError.trend.all[moment(item.date_string).format('MM-DD')] = item.js_error;
+                    });
+                } else {
+                    _.forEach(result, function(item) {
+                        if (_.isUndefined(jsError.trend[item.name])) {
+                            jsError.trend[item.name] = {};
+                        }
+                        jsError.trend[item.name][moment(item.date_string).format('MM-DD')] = item.js_error;
+                    });
+                }            
+                return jsError;
+            } catch(err) {
+                throw err;
+            }
+        });
+    }
+
+    pub.apiError = function apiError() {
+        var factor = pub.request.query.factor;
+        return co(function *() {
+            try {
+                var data = yield pri.reduceApiError(factor);
+            } catch (err) {
+                GLB.app.logger.error(err);
+                throw err;
+            }
+            return pub.response.json({code: 200, data: data});
+        });
+    }
+
+    pri.reduceApiError = function reduceApiError(factor) {
+        var match = {
+            page_id: +pri.pageId,
+            date_string: {
+                $gte: pri.startDate,
+                $lte: pri.endDate,
+            },
+        };
+
+        var pAll = [
+            {
+                $match: match,
+            },
+            {
+                $group: {
+                    _id: {
+                        date_string: '$date_string',
+                    },
+                    js_error: {
+                        $sum: '$qty',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date_string: '$_id.date_string',
+                    js_error: 1,
+                },
+            },
+            {
+                $sort: {
+                    date_string: 1,
+                },
+            },
+        ];
+
+        var pOsFull = [
+            {
+                $match: match,
+            },
+            {
+                $unwind: '$os_full',
+            },
+            {
+                $group: {
+                    _id: {
+                        date_string: '$date_string',
+                        name: '$os_full.name',
+                    },
+                    js_error: {
+                        $sum: '$qty',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: '$_id.name',
+                    date_string: '$_id.date_string',
+                    js_error: 1,
+                },
+            },
+            {
+                $sort: {
+                    date_string: 1,
+                },
+            },
+        ];
+
+        var pBrowserFull = _.cloneDeep(pOsFull);
+        pBrowserFull[1] = {
+            $unwind: '$browser_full',
+        };
+        pBrowserFull[2]['$group']['_id'] = {
+            date_string: '$date_string',
+            name: '$browser_full.name',
+        };
+
+        switch (factor) {
+            case 'all': {
+                var pipeline = pAll;
+                break;
+            }
+            case 'os_full': {
+                var pipeline = pOsFull;
+                break;
+            }
+            case 'browser_full': {
+                var pipeline = pBrowserFull;
+                break;
+            }
+        }
+
+        return co(function *() {
+            try {
+                var result = yield pri.statJsErrorModel.aggregate(pipeline).exec();
+                var apiError = {
+                    trend: {},
+                };
+                if (factor === 'all') {
+                    apiError.trend.all = {};
+                    _.forEach(result, function(item) {
+                        apiError.trend.all[moment(item.date_string).format('MM-DD')] = item.js_error;
+                    });
+                } else {
+                    _.forEach(result, function(item) {
+                        if (_.isUndefined(apiError.trend[item.name])) {
+                            apiError.trend[item.name] = {};
+                        }
+                        apiError.trend[item.name][moment(item.date_string).format('MM-DD')] = item.js_error;
+                    });
+                }            
+                return apiError;
+            } catch(err) {
+                throw err;
+            }
+        });
+    }
+
+    pub.jsErrorList = function jsErrorList() {
+
+    }
+
+    pub.apiErrorList = function apiErrorList() {
+        
     }
 }
 

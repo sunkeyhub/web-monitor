@@ -38,6 +38,10 @@ var statJsErrorSchema = new Schema({
                 type: Number,
                 required: true,
             },
+            latest_time: {
+                type: Date,
+                required: true,
+            },
         },
     }],
     browser_full: [{
@@ -67,6 +71,10 @@ var statJsErrorSchema = new Schema({
                 required: true,
             },
         },
+        latest_time: {
+            type: Date,
+            required: true,
+        },
     }],
     qty: {
         type: Number,
@@ -92,6 +100,10 @@ var statJsErrorSchema = new Schema({
     },
     date_string: {
         type: String,
+        required: true,
+    },
+    latest_time: {
+        type: Date, 
         required: true,
     },
     created_time: {

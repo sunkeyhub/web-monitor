@@ -43,6 +43,10 @@ var statApiErrorSchema = new Schema({
                 default: '',
             },
         },
+        latest_time: {
+            type: Date,
+            required: true,
+        },
     }],
     browser_full: [{
         name: {
@@ -75,6 +79,10 @@ var statApiErrorSchema = new Schema({
                 default: '',
             },
         },
+        latest_time: {
+            type: Date,
+            required: true,
+        },
     }],
     qty: {
         type: Number,
@@ -104,6 +112,10 @@ var statApiErrorSchema = new Schema({
     },
     date_string: {
         type: String,
+        required: true,
+    },
+    latest_time: {
+        type: Date,
         required: true,
     },
     created_time: {

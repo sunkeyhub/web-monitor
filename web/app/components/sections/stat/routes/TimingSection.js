@@ -80,6 +80,10 @@ class TimingSection extends Component {
         this.trendOption = _.cloneDeep(lineChartTpl);
         this.periodOption = _.cloneDeep(barChartTpl);
         this.performanceOption = _.cloneDeep(barChartTpl);
+
+        if (this.props.factorKey !== '-') {
+            this.props.dispatch(getSubSectionData(this.props.factorKey));
+        }
     }
 
     componentWillUpdate(nextProps) {
@@ -90,6 +94,7 @@ class TimingSection extends Component {
 
     componentDidUpdate() {
         this.refreshChart(this.props);
+        console.log('didupdate');
     }
 
     refreshChart(props) {
@@ -102,59 +107,102 @@ class TimingSection extends Component {
         this.performanceChart = echarts.init(performanceDOM);
 
         this.trendOption.legend.data = _.keys(props.trend);
-        var seriesItemTpl = this.trendOption.series.shift();
-        var self = this;
-        self.trendOption.series = [];
-        _.forEach(this.trendOption.legend.data, function(name) {
-            let pushItem = {
-                name: name,
-                type: 'line',
-                label: {
-                    normal: {
-                        show: true,
+        this.trendOption.series = [];
+
+        if (this.props.factorKey === 'all') {
+            let seriesItemTpl = this.trendOption.series.shift();
+            _.forEach(this.trendOption.legend.data, (name) => {
+                let pushItem = {
+                    name: name,
+                    type: 'line',
+                    label: {
+                        normal: {
+                            show: true,
+                        }
+                    },
+                    data: _.values(props.trend[name]),
+                };
+                this.trendOption.xAxis[0].data = _.keys(props.trend[name]);
+                this.trendOption.series.push(pushItem);
+            });
+        } else {
+            let dateList = [];
+            _.forEach(_.values(this.props.trend), (val, index) => {
+                dateList = _.concat(dateList, _.keys(val));
+            });
+            dateList = _.uniq(dateList);
+            this.trendOption.xAxis[0].data = dateList;
+
+            _.forEach(this.trendOption.legend.data, (name) => {
+                let pushItem = {
+                    name: name,
+                    type: 'line',
+                    label: {
+                        normal: {
+                            show: true,
+                        }
+                    },
+                    data: [],
+                };
+                let data = [];
+                _.forEach(dateList, (date, index) => {
+                    let val = 0;
+                    if (!_.isUndefined(this.props.trend[name][date])) {
+                        val = this.props.trend[name][date];
                     }
-                },
-                data: _.values(props.trend[name]),
-            };
-            self.trendOption.xAxis[0].data = _.keys(props.trend[name]);
-            self.trendOption.series.push(pushItem);
-        });
+                    data.push(val);
+                });
+
+                if (!_.every(data, (item) => item === 0)) {
+                    data = _.map(data, (val, index) => {
+                        if (val === 0) {
+                            let noZeroIndex = _.findIndex(data, (item) => item > 0);
+                            return data[noZeroIndex];
+                        }
+                        return val;
+                    });
+                }
+                pushItem.data = data;
+
+                this.trendOption.series.push(pushItem);
+            });
+        }
 
         this.trendChart.setOption(this.trendOption);
 
         if (props.factorKey == 'all') {
             this.periodOption.legend.data = _.keys(props.period.all);
-            self.periodOption.series = [];
-            _.forOwn(props.period.all, function(value, key) {
+            this.periodOption.series = [];
+            _.forOwn(props.period.all, (value, key) => {
                 let pushItem = {
                     name: key,
                     type: 'bar',
                     stack: 'period',
                     data: _.values(value),
                 };
-                self.periodOption.xAxis[0].data = _.keys(value);
-                self.periodOption.series.push(pushItem);
+                this.periodOption.xAxis[0].data = _.keys(value);
+                this.periodOption.series.push(pushItem);
             });
 
             this.performanceOption.legend.data = _.keys(props.performance.all);
-            self.performanceOption.series = [];
-            _.forOwn(props.performance.all, function(value, key) {
+            this.performanceOption.series = [];
+            _.forOwn(props.performance.all, (value, key) => {
                 let pushItem = {
                     name: key,
                     type: 'bar',
                     stack: 'performance',
                     data: _.values(value),
                 };
-                self.performanceOption.xAxis[0].data = _.keys(value);
-                self.performanceOption.series.push(pushItem);
+                this.performanceOption.xAxis[0].data = _.keys(value);
+                this.performanceOption.series.push(pushItem);
             });           
         } else {
-            self.periodOption.xAxis[0].data = _.keys(props.period);
-            self.periodOption.series = [];
-            _.forOwn(props.period, function(value, key) {
-                self.periodOption.legend.data = _.keys(value);
-                _.forOwn(value, function(subValue, subKey) {
-                    var index = _.findIndex(self.periodOption.series, ['name', subKey]);
+            this.periodOption.xAxis[0].data = _.keys(props.period);
+            this.periodOption.series = [];
+            _.forOwn(props.period, (value, key) => {
+                this.periodOption.legend.data = _.keys(value);
+                _.forOwn(value, (subValue, subKey) => {
+                    var index = _.findIndex(this.periodOption.series, ['name', subKey]);
                     if (index < 0) {
                         let pushItem = {
                             name: subKey,
@@ -162,19 +210,19 @@ class TimingSection extends Component {
                             stack: 'period',
                             data: [subValue],
                         };
-                        self.periodOption.series.push(pushItem);
+                        this.periodOption.series.push(pushItem);
                     } else {
-                        self.periodOption.series[index].data.push(subValue);
+                        this.periodOption.series[index].data.push(subValue);
                     }
                 });
             });
 
-            self.performanceOption.xAxis[0].data = _.keys(props.performance);
-            self.performanceOption.series = [];
-            _.forOwn(props.performance, function(value, key) {
-                self.performanceOption.legend.data = _.keys(value);
-                _.forOwn(value, function(subValue, subKey) {
-                    var index = _.findIndex(self.performanceOption.series, ['name', subKey]);
+            this.performanceOption.xAxis[0].data = _.keys(props.performance);
+            this.performanceOption.series = [];
+            _.forOwn(props.performance, (value, key) => {
+                this.performanceOption.legend.data = _.keys(value);
+                _.forOwn(value, (subValue, subKey) => {
+                    var index = _.findIndex(this.performanceOption.series, ['name', subKey]);
                     if (index < 0) {
                         let pushItem = {
                             name: subKey,
@@ -182,9 +230,9 @@ class TimingSection extends Component {
                             stack: 'period',
                             data: [subValue],
                         };
-                        self.performanceOption.series.push(pushItem);
+                        this.performanceOption.series.push(pushItem);
                     } else {
-                        self.performanceOption.series[index].data.push(subValue);
+                        this.performanceOption.series[index].data.push(subValue);
                     }
                 });
             });
@@ -213,7 +261,7 @@ class TimingSection extends Component {
                             <label>相关因子：</label>
                             <Select size="small" className="u-select" value={factorKey} onChange={this.onFactorChange.bind(this)}>
                                 { 
-                                    _.map(factorList, function(val, index) {
+                                    _.map(factorList, (val, index) => {
                                         return (<Option key={val.key} value={val.key}>{val.name}</Option>);
                                     })
                                 }

@@ -39,6 +39,7 @@ export default class TopbarSection extends Component {
             <header className="g-topbar">
                 <div className="g-left">
                     <div className="u-logo">
+                        <img className="img" src="/static/img/jedi_logo.png" />
                         <span className="text">JediMonitor</span>
                     </div>
                 </div>
