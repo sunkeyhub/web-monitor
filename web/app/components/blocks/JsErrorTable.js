@@ -7,57 +7,155 @@
 import React, { Component } from 'react';
 import { Table, Icon } from 'antd';
 
+import { getJsErrorInfoList } from '../../actions/stat';
+
 export default class JsErrorTable extends Component {
     componentDidMount() {
 
     }
 
     render() {
-        const columns = [{
-          title: '姓名',
-          dataIndex: 'name',
-          key: 'name',
-          render: (text) => <a href="#">{text}</a>,
-        }, {
-          title: '年龄',
-          dataIndex: 'age',
-          key: 'age',
-        }, {
-          title: '住址',
-          dataIndex: 'address',
-          key: 'address',
-        }, {
-          title: '操作',
-          key: 'operation',
-          render: (text, record) => (
-            <span>
-              <a href="#">操作一{record.name}</a>
-              <span className="ant-divider"></span>
-              <a href="#">操作二</a>
-              <span className="ant-divider"></span>
-              <a href="#" className="ant-dropdown-link">
-                更多 <Icon type="down" />
-              </a>
-            </span>
-          ),
-        }];
+        const columns = [
+            {
+              title: 'ID',
+              dataIndex: 'id',
+              key: 'id',
+            },
+            {
+              title: '信息',
+              dataIndex: 'msg',
+              key: 'msg',
+              render: (text) => <span className="error-msg">{text}</span>
+            },
+            {
+              title: '路径',
+              dataIndex: 'file_path',
+              key: 'file_path',
+            },
+            {
+              title: '行',
+              dataIndex: 'file_line',
+              key: 'file_line',
+            },
+            {
+              title: '列',
+              dataIndex: 'file_column',
+              key: 'file_column',                
+            },
+            {
+              title: '最近出现',
+              dataIndex: 'latest_time',
+              key: 'latest_time',                  
+            },
+            {
+              title: '次数',
+              dataIndex: 'qty',
+              key: 'qty',                  
+            },          
+        ];
 
-        const data = [{
-          key: '1',
-          name: '胡彦斌',
-          age: 32,
-          address: '西湖区湖底公园1号',
-        }, {
-          key: '2',
-          name: '胡彦祖',
-          age: 42,
-          address: '西湖区湖底公园1号',
-        }, {
-          key: '3',
-          name: '李大嘴',
-          age: 32,
-          address: '西湖区湖底公园1号',
-        }];        
+        const data = [
+            {
+                key: '1',
+                id: 1,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '2',
+                id: 2,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '3',
+                id: 3,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '4',
+                id: 4,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '5',
+                id: 5,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '6',
+                id: 6,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '7',
+                id: 7,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '8',
+                id: 8,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '9',
+                id: 9,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+            {
+                key: '10',
+                id: 10,
+                msg: 'Uncaught ReferenceError: b is not defined',
+                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
+                file_line: 14,
+                file_column: 9,
+                latest_time: '2012-10-10',
+                qty: 100,
+            },
+        ];        
         return (
             <div><Table columns={columns} dataSource={data} /></div>
         );

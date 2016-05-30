@@ -865,11 +865,68 @@ function StatController() {
         });
     }
 
-    pub.jsErrorList = function jsErrorList() {
+    pub.jsErrorInfoList = function jsErrorInfoList() {
+        const p = pub.request.query.p;
+        const per = pub.request.query.per;
+        const sort = {id: -1};
 
+        const skip = (p-1) * per;
+
+        const match = {
+            page_id: +pri.pageId,
+            date_string: {
+                $gte: pri.startDate,
+                $lte: pri.endDate,
+            },
+        };
+
+        let pAll = [
+            {
+                $match: match,
+            },
+            {
+                $group: {
+                    _id: {
+                        msg: '$msg',
+                        file_path: '$file.path',
+                        file_line: '$file.line',
+                        file_column: '$file.column',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    msg: '$_id.msg',
+                    file_path: '$_id.file_path',
+                    file_line: '$_id.file_line',
+                    file_column: '$_id.file_column',
+                },
+            },
+            {
+                $sort: sort,
+            },
+            {
+                $limit: per,
+            },
+            {
+                $skip: skip,
+            },
+        ];
+
+        let pipeline = pAll;
+
+        return co(function *() {
+            try {
+                let result = yield pri.statJsErrorModel.aggregate(pipeline).exec();
+                console.log(result);
+            } catch (err) {
+                console.log(err); 
+            }
+        });
     }
 
-    pub.apiErrorList = function apiErrorList() {
+    pub.apiErrorInfoList = function apiErrorInfoList() {
         
     }
 }

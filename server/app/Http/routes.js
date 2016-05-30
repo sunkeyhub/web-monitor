@@ -50,14 +50,14 @@ module.exports = [
             {
                 comment: 'Js 报错数据接口',
                 method: 'GET',
-                path: '/stat/jsErrorList',
-                route: 'StatController@apiErrorList',
+                path: '/stat/jsErrorInfoList',
+                route: 'StatController@jsErrorInfoList',
             },
             {
                 comment: 'Api 报错数据接口',
                 method: 'GET',
-                path: '/stat/apiErrorList',
-                route: 'StatController@apiErrorList',
+                path: '/stat/apiErrorInfoList',
+                route: 'StatController@apiErrorInfoList',
             },
             {
                 comment: '页面列表接口',

@@ -139,6 +139,35 @@ export function getSubSectionData(factorKey) {
     };   
 }
 
+export function getJsErrorInfoList(p, per) {
+    return (dispatch, getState) => {
+        const state = getState();
+        const startDate = moment(state.stat.topbar.startDate).format('YYYY-MM-DD');
+        const endDate = moment(state.stat.topbar.endDate).format('YYYY-MM-DD');
+
+        const queryObj = {
+            page_id: state.stat.topbar.pageId,
+            start_date: startDate,
+            end_date: endDate,
+        }    
+
+        const pathname = 'admin/stat/getJsErrorInfoList';
+        const requestUrl = url.format({
+            protocol: 'http',
+            hostname: server['hostname'],
+            port: server['port'],
+            pathname: pathname,
+            query: queryObj,
+        });
+
+        return fetch(requestUrl).then(function(res) {
+            return res.json();
+        }).then(function(json) {
+            dispatch({type: 'UPDATE_JS_ERROR_INFO_LIST', data: json});
+        });       
+    }
+}
+
 export function changeTimingSection(data) {
     return {
         type: 'CHANGE_TIMING_SECTION',

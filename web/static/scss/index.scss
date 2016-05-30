@@ -151,7 +151,18 @@
 
                             .content {
                                 height: 300px; 
-                                background-color: $light-primary-color;
+                                background-color: $body-bg;
+                            }
+
+                            &.m-subsection-detail-list {
+                                .content {
+                                    height: auto;
+                                    background: #fff;
+
+                                    .error-msg {
+                                        color: red;
+                                    }
+                                }
                             }
                         }
                     }
@@ -215,7 +226,7 @@
                     }
                 }
 
-                .m-section-timing {
+                .m-section-timing, .m-section-js-error, .m-section-api-error {
                     margin-top: 30px;
 
                     .m-subsection {

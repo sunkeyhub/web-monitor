@@ -144,7 +144,7 @@ class JsErrorSection extends Component {
 
         return (
             <div>
-                <section className="m-section m-section-timing">
+                <section className="m-section m-section-js-error">
                     <h5 className="title">
                         <span>Js 报错分析</span>
                         <div className="m-select-factor">
@@ -167,10 +167,10 @@ class JsErrorSection extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="m-subsection">
+                        <div className="m-subsection m-subsection-detail-list">
                             <h6 className="title">报错详情</h6>
                             <div className="content">
-                                <JsErrorTable />
+                                <JsErrorTable dispatch={this.props.dispatch} info={this.props.info}/>
                             </div>
                         </div>
                     </div>
@@ -185,6 +185,7 @@ function mapStateToProps(state) {
         factorKey: state.stat.jsError.factorKey,
         factorList: state.stat.jsError.factorList,
         trend: state.stat.jsError.trend,
+        info: state.stat.jsError.info,
     }
 }
 

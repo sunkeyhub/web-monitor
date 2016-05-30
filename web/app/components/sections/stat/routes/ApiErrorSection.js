@@ -143,7 +143,7 @@ class ApiErrorSection extends Component {
 
         return (
             <div>
-                <section className="m-section m-section-timing">
+                <section className="m-section m-section-api-error">
                     <h5 className="title">
                         <span>Js 报错分析</span>
                         <div className="m-select-factor">
