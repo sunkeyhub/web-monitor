@@ -681,6 +681,7 @@ function Report() {
                             page_id: 1,
                             msg: 1,
                             file: 1,
+                            created_time: 1,
                         },
                     },
                     {
@@ -697,7 +698,7 @@ function Report() {
                             },
                             latest_time: {
                                 $max: '$created_time',
-                            }
+                            },
                         },
                     },
                     {
@@ -711,6 +712,7 @@ function Report() {
                                 column: '$_id.file_column',
                             },
                             qty: 1,
+                            latest_time: 1,
                         },
                     },
                 ]; // pipeline
@@ -810,6 +812,7 @@ function Report() {
                         $project: {
                             page_id: 1,
                             api: 1,
+                            created_time: 1,
                         },
                     },
                     {
@@ -825,6 +828,9 @@ function Report() {
                             qty: {
                                 $sum: 1,
                             },
+                            latest_time: {
+                                $max: '$created_time'
+                            },
                         },
                     },
                     {
@@ -839,6 +845,7 @@ function Report() {
                                 response_body: '$_id.api_response_body',
                             },
                             qty: 1,
+                            latest_time: '$latest_time',
                         },
                     },
                 ]; // pipeline
