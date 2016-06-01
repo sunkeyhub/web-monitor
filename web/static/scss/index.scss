@@ -198,6 +198,11 @@
                             width: 2rem;
                             height: 120px;
                             background-color: $light-primary-color;
+                            transition: all 1s;
+
+                            &:hover {
+                                box-shadow: 0 0 6px rgba(0,0,0,0.1);
+                            }
 
                             .icon {
                                 padding: 0 25px 0 15px; 
