@@ -866,11 +866,7 @@ function StatController() {
     }
 
     pub.jsErrorInfoList = function jsErrorInfoList() {
-        const p = pub.request.query.p;
-        const per = pub.request.query.per;
-        const sort = {id: -1};
-
-        const skip = (p-1) * per;
+        const sort = {latest_time: -1};
 
         const match = {
             page_id: +pri.pageId,
@@ -892,6 +888,12 @@ function StatController() {
                         file_line: '$file.line',
                         file_column: '$file.column',
                     },
+                    qty: {
+                        $sum: '$qty',
+                    },
+                    latest_time: {
+                        $max: '$latest_time',
+                    },
                 },
             },
             {
@@ -901,16 +903,12 @@ function StatController() {
                     file_path: '$_id.file_path',
                     file_line: '$_id.file_line',
                     file_column: '$_id.file_column',
+                    qty: 1,
+                    latest_time: 1,
                 },
             },
             {
                 $sort: sort,
-            },
-            {
-                $limit: per,
-            },
-            {
-                $skip: skip,
             },
         ];
 
@@ -919,15 +917,70 @@ function StatController() {
         return co(function *() {
             try {
                 let result = yield pri.statJsErrorModel.aggregate(pipeline).exec();
-                console.log(result);
+
+                pub.response.json({code: 200, data: result});
             } catch (err) {
-                console.log(err); 
+                throw err;
             }
         });
     }
 
     pub.apiErrorInfoList = function apiErrorInfoList() {
-        
+        const sort = {latest_time: -1};
+
+        const match = {
+            page_id: +pri.pageId,
+            date_string: {
+                $gte: pri.startDate,
+                $lte: pri.endDate,
+            },
+        };
+
+        let pAll = [
+            {
+                $match: match,
+            },
+            {
+                $group: {
+                    _id: {
+                        request_url: '$api.request_url',
+                        status_code: '$api.status_code',
+                        request_method: '$api.request_method',
+                    },
+                    qty: {
+                        $sum: '$qty',
+                    },
+                    latest_time: {
+                        $max: '$latest_time',
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    request_url: '$_id.request_url',
+                    status_code: '$_id.status_code',
+                    request_method: '$_id.request_method',
+                    qty: 1,
+                    latest_time: 1,
+                },
+            },
+            {
+                $sort: sort,
+            },
+        ];
+
+        let pipeline = pAll;
+
+        return co(function *() {
+            try {
+                let result = yield pri.statApiErrorModel.aggregate(pipeline).exec();
+
+                pub.response.json({code: 200, data: result});
+            } catch (err) {
+                throw err;
+            }
+        });        
     }
 }
 

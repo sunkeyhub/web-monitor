@@ -8,11 +8,7 @@ var initialState = {
     factorKey: '-', 
     factorList: [],
     trend: {},
-    info: {
-        p: 1,
-        per: 20,
-        dataList: [],
-    },
+    infoList: [],
 };
 
 export default function jsError(state=initialState, action) {
@@ -34,8 +30,8 @@ export default function jsError(state=initialState, action) {
         case 'CHANGE_JS_ERROR_SECTION': {
             return Object.assign({}, state, action.data);
         }
-        case 'UPDATE_INFO_LIST': {
-            return Object.assign({}, state.dataList, action.data.data);
+        case 'UPDATE_JS_ERROR_INFO_LIST': {
+            return Object.assign({}, state, {infoList: action.data.data});
         }
     }
 

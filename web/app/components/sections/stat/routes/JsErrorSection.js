@@ -170,7 +170,7 @@ class JsErrorSection extends Component {
                         <div className="m-subsection m-subsection-detail-list">
                             <h6 className="title">报错详情</h6>
                             <div className="content">
-                                <JsErrorTable dispatch={this.props.dispatch} info={this.props.info}/>
+                                <JsErrorTable infoList={this.props.infoList} />
                             </div>
                         </div>
                     </div>
@@ -185,7 +185,7 @@ function mapStateToProps(state) {
         factorKey: state.stat.jsError.factorKey,
         factorList: state.stat.jsError.factorList,
         trend: state.stat.jsError.trend,
-        info: state.stat.jsError.info,
+        infoList: state.stat.jsError.infoList,
     }
 }
 

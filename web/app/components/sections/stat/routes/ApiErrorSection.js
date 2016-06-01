@@ -166,10 +166,10 @@ class ApiErrorSection extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="m-subsection">
+                        <div className="m-subsection m-subsection-detail-list">
                             <h6 className="title">报错详情</h6>
                             <div className="content">
-                                <ApiErrorTable />
+                                <ApiErrorTable infoList={this.props.infoList} />
                             </div>
                         </div>
                     </div>
@@ -184,6 +184,7 @@ function mapStateToProps(state) {
         factorKey: state.stat.apiError.factorKey,
         factorList: state.stat.apiError.factorList,
         trend: state.stat.apiError.trend,
+        infoList: state.stat.apiError.infoList,
     }
 }
 

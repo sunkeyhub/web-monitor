@@ -10,14 +10,18 @@ import { Table, Icon } from 'antd';
 import { getJsErrorInfoList } from '../../actions/stat';
 
 export default class JsErrorTable extends Component {
-    componentDidMount() {
+    constructor() {
+        super();
 
+        this.state = {
+            per: 20,
+        };
     }
 
     render() {
         const columns = [
             {
-              title: 'ID',
+              title: '序号',
               dataIndex: 'id',
               key: 'id',
             },
@@ -54,110 +58,20 @@ export default class JsErrorTable extends Component {
             },          
         ];
 
-        const data = [
-            {
-                key: '1',
-                id: 1,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '2',
-                id: 2,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '3',
-                id: 3,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '4',
-                id: 4,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '5',
-                id: 5,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '6',
-                id: 6,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '7',
-                id: 7,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '8',
-                id: 8,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '9',
-                id: 9,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-            {
-                key: '10',
-                id: 10,
-                msg: 'Uncaught ReferenceError: b is not defined',
-                file_path: 'file:///Users/Sunkey/Projects/perMonitor/test.html',
-                file_line: 14,
-                file_column: 9,
-                latest_time: '2012-10-10',
-                qty: 100,
-            },
-        ];        
+        let index = 1;
+        const infoList = _.map(this.props.infoList, function(item) {
+            item.id = item.key = index++;
+            return item;
+        });
+
+        const pagination = {
+            total: infoList.length,
+            pageSize: 5,
+        };     
         return (
-            <div><Table columns={columns} dataSource={data} /></div>
+            <div>
+                <Table columns={columns} dataSource={infoList} pagination={pagination} />
+            </div>
         );
     }
 }

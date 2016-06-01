@@ -66,6 +66,7 @@ export function getSectionData(pageId, startDate, endDate) {
                 };
                 var pathname = 'admin/common/factorList';
                 var actionType = 'INIT_FACTOR_LIST';
+
                 break;
             case '/stat/apiError':
                 var queryObj = {
@@ -88,6 +89,11 @@ export function getSectionData(pageId, startDate, endDate) {
             return res.json();
         }).then(function(json) {
             dispatch({type: actionType, data: json});
+            if (queryObj.type === 'jsError') {
+                dispatch(getJsErrorInfoList());
+            } else if (queryObj.type === 'apiError') {
+                dispatch(getApiErrorInfoList());
+            }
         });
     };
 }
@@ -139,7 +145,7 @@ export function getSubSectionData(factorKey) {
     };   
 }
 
-export function getJsErrorInfoList(p, per) {
+function getJsErrorInfoList() {
     return (dispatch, getState) => {
         const state = getState();
         const startDate = moment(state.stat.topbar.startDate).format('YYYY-MM-DD');
@@ -151,7 +157,7 @@ export function getJsErrorInfoList(p, per) {
             end_date: endDate,
         }    
 
-        const pathname = 'admin/stat/getJsErrorInfoList';
+        const pathname = 'admin/stat/jsErrorInfoList';
         const requestUrl = url.format({
             protocol: 'http',
             hostname: server['hostname'],
@@ -164,6 +170,35 @@ export function getJsErrorInfoList(p, per) {
             return res.json();
         }).then(function(json) {
             dispatch({type: 'UPDATE_JS_ERROR_INFO_LIST', data: json});
+        });       
+    }
+}
+
+function getApiErrorInfoList() {
+    return (dispatch, getState) => {
+        const state = getState();
+        const startDate = moment(state.stat.topbar.startDate).format('YYYY-MM-DD');
+        const endDate = moment(state.stat.topbar.endDate).format('YYYY-MM-DD');
+
+        const queryObj = {
+            page_id: state.stat.topbar.pageId,
+            start_date: startDate,
+            end_date: endDate,
+        }    
+
+        const pathname = 'admin/stat/apiErrorInfoList';
+        const requestUrl = url.format({
+            protocol: 'http',
+            hostname: server['hostname'],
+            port: server['port'],
+            pathname: pathname,
+            query: queryObj,
+        });
+
+        return fetch(requestUrl).then(function(res) {
+            return res.json();
+        }).then(function(json) {
+            dispatch({type: 'UPDATE_API_ERROR_INFO_LIST', data: json});
         });       
     }
 }

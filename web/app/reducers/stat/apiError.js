@@ -8,6 +8,7 @@ var initialState = {
     factorKey: '-', 
     factorList: [],
     trend: {},
+    infoList: [],
 };
 
 export default function apiError(state=initialState, action) {
@@ -28,6 +29,9 @@ export default function apiError(state=initialState, action) {
         }
         case 'CHANGE_API_ERROR_SECTION': {
             return Object.assign({}, state, action.data);
+        }
+        case 'UPDATE_API_ERROR_INFO_LIST': {
+            return Object.assign({}, state, {infoList: action.data.data});
         }
     }
 

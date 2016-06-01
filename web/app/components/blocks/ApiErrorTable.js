@@ -8,58 +8,55 @@ import React, { Component } from 'react';
 import { Table, Icon } from 'antd';
 
 export default class ApiErrorTable extends Component {
-    componentDidMount() {
-
-    }
-
     render() {
-        const columns = [{
-          title: '姓名',
-          dataIndex: 'name',
-          key: 'name',
-          render: (text) => <a href="#">{text}</a>,
-        }, {
-          title: '年龄',
-          dataIndex: 'age',
-          key: 'age',
-        }, {
-          title: '住址',
-          dataIndex: 'address',
-          key: 'address',
-        }, {
-          title: '操作',
-          key: 'operation',
-          render: (text, record) => (
-            <span>
-              <a href="#">操作一{record.name}</a>
-              <span className="ant-divider"></span>
-              <a href="#">操作二</a>
-              <span className="ant-divider"></span>
-              <a href="#" className="ant-dropdown-link">
-                更多 <Icon type="down" />
-              </a>
-            </span>
-          ),
-        }];
+        const columns = [
+            {
+              title: '序号',
+              dataIndex: 'id',
+              key: 'id',
+            },
+            {
+              title: '状态码',
+              dataIndex: 'status_code',
+              key: 'msg',
+              render: (text) => <span className="error-msg">{text}</span>
+            },
+            {
+              title: '请求方法',
+              dataIndex: 'request_method',
+              key: 'request_method',
+            },
+            {
+              title: '请求链接',
+              dataIndex: 'request_url',
+              key: 'request_url',
+            },
+            {
+              title: '最近出现',
+              dataIndex: 'latest_time',
+              key: 'latest_time',                  
+            },
+            {
+              title: '次数',
+              dataIndex: 'qty',
+              key: 'qty',                  
+            },          
+        ];
 
-        const data = [{
-          key: '1',
-          name: '胡彦斌',
-          age: 32,
-          address: '西湖区湖底公园1号',
-        }, {
-          key: '2',
-          name: '胡彦祖',
-          age: 42,
-          address: '西湖区湖底公园1号',
-        }, {
-          key: '3',
-          name: '李大嘴',
-          age: 32,
-          address: '西湖区湖底公园1号',
-        }];        
+        let index = 1;
+        const infoList = _.map(this.props.infoList, function(item) {
+            item.id = item.key = index++;
+            return item;
+        });
+
+        const pagination = {
+            total: infoList.length,
+            pageSize: 5,
+        };     
         return (
-            <div><Table columns={columns} dataSource={data} /></div>
+            <div>
+                <Table columns={columns} dataSource={infoList} pagination={pagination} />
+            </div>
         );
     }
 }
