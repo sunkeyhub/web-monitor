@@ -3,6 +3,8 @@
  *
  * @author : Sunkey
  */
+ 
+import * as ACTION_TYPE from '../../constants/ACTION_TYPE';
 
 var initialState = {
     factorKey: '-', 
@@ -13,7 +15,7 @@ var initialState = {
 
 export default function jsError(state=initialState, action) {
     switch (action.type) {
-        case 'INIT_FACTOR_LIST': {
+        case ACTION_TYPE.INIT_FACTOR_LIST: {
             if (action.data.code == 200) {
                 var factorList = action.data.data;
                 if (factorList.length > 0) {
@@ -22,15 +24,15 @@ export default function jsError(state=initialState, action) {
                 }
             }
         }
-        case 'UPDATE_JS_ERROR_SECTION': {
+        case ACTION_TYPE.UPDATE_JS_ERROR_SECTION: {
             if (action.data.code == 200) {
                 return Object.assign({}, state, action.data.data);
             }
         }
-        case 'CHANGE_JS_ERROR_SECTION': {
+        case ACTION_TYPE.CHANGE_JS_ERROR_SECTION: {
             return Object.assign({}, state, action.data);
         }
-        case 'UPDATE_JS_ERROR_INFO_LIST': {
+        case ACTION_TYPE.UPDATE_JS_ERROR_INFO_LIST: {
             return Object.assign({}, state, {infoList: action.data.data});
         }
     }

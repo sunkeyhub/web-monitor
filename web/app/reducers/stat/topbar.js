@@ -4,6 +4,8 @@
  * @author : Sunkey
  */
 
+import * as ACTION_TYPE from '../../constants/ACTION_TYPE';
+
 var moment = require('moment');
 
 var initialState = {
@@ -15,7 +17,7 @@ var initialState = {
 
 export default function topbar(state=initialState, action) {
     switch (action.type) {
-        case 'INIT_PAGE_LIST': {
+        case ACTION_TYPE.INIT_PAGE_LIST: {
             var data = action.data;
             if (data.code == 200) {
                 var pageList = data.data;
@@ -24,7 +26,7 @@ export default function topbar(state=initialState, action) {
                 }
             }
         }
-        case 'CHANGE_TOPBAR': {
+        case ACTION_TYPE.CHANGE_TOPBAR: {
             var data = action.data;
             return Object.assign({}, state, data);
         }

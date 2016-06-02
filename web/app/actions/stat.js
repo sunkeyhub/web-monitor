@@ -10,6 +10,8 @@ var moment = require('moment');
 
 import server from '../../config/server';
 
+import * as ACTION_TYPE from '../constants/ACTION_TYPE';
+
 /**
  * 获取页面列表
  * @return Promise
@@ -24,7 +26,7 @@ export function getPageList() {
         return fetch(requestUrl).then(function(res) {
             return res.json();
         }).then(function(json) {
-            dispatch({type: 'INIT_PAGE_LIST', data: json});
+            dispatch({type: ACTION_TYPE.INIT_PAGE_LIST, data: json});
         });
     };
 }
@@ -50,7 +52,7 @@ export function getSectionData(pageId, startDate, endDate) {
         switch (state.routing.locationBeforeTransitions.pathname) {
             case '/stat/overview': {
                 var pathname = 'admin/stat/overview';
-                var actionType = 'UPDATE_OVERVIEW_SECTION';
+                var actionType = ACTION_TYPE.UPDATE_OVERVIEW_SECTION;
                 break;
             }
             case '/stat/timing':
@@ -58,14 +60,14 @@ export function getSectionData(pageId, startDate, endDate) {
                     type: 'timing',
                 };
                 var pathname = 'admin/common/factorList';
-                var actionType = 'INIT_FACTOR_LIST';
+                var actionType = ACTION_TYPE.INIT_FACTOR_LIST;
                 break;
             case '/stat/jsError':
                 var queryObj = {
                     type: 'jsError',
                 };
                 var pathname = 'admin/common/factorList';
-                var actionType = 'INIT_FACTOR_LIST';
+                var actionType = ACTION_TYPE.INIT_FACTOR_LIST;
 
                 break;
             case '/stat/apiError':
@@ -73,7 +75,7 @@ export function getSectionData(pageId, startDate, endDate) {
                     type: 'apiError',
                 };
                 var pathname = 'admin/common/factorList';
-                var actionType = 'INIT_FACTOR_LIST';
+                var actionType = ACTION_TYPE.INIT_FACTOR_LIST;
                 break;
         }
 
@@ -114,17 +116,17 @@ export function getSubSectionData(factorKey) {
         switch (state.routing.locationBeforeTransitions.pathname) {
             case '/stat/timing': {
                 var pathname = 'admin/stat/timing';
-                var actionType = 'UPDATE_TIMING_SECTION';
+                var actionType = ACTION_TYPE.UPDATE_TIMING_SECTION;
                 break;
             }
             case '/stat/jsError': {
                 var pathname = 'admin/stat/jsError';
-                var actionType = 'UPDATE_JS_ERROR_SECTION';
+                var actionType = ACTION_TYPE.UPDATE_JS_ERROR_SECTION;
                 break;
             }
             case '/stat/apiError': {
                 var pathname = 'admin/stat/apiError';
-                var actionType = 'UPDATE_API_ERROR_SECTION';
+                var actionType = ACTION_TYPE.UPDATE_API_ERROR_SECTION;
                 break;
             }
         }
@@ -198,28 +200,28 @@ function getApiErrorInfoList() {
         return fetch(requestUrl).then(function(res) {
             return res.json();
         }).then(function(json) {
-            dispatch({type: 'UPDATE_API_ERROR_INFO_LIST', data: json});
+            dispatch({type: ACTION_TYPE.UPDATE_API_ERROR_INFO_LIST, data: json});
         });       
     }
 }
 
 export function changeTimingSection(data) {
     return {
-        type: 'CHANGE_TIMING_SECTION',
+        type: ACTION_TYPE.CHANGE_TIMING_SECTION,
         data: data,
     };
 }
 
 export function changeJsErrorSection(data) {
     return {
-        type: 'CHANGE_JS_ERROR_SECTION',
+        type: ACTION_TYPE.CHANGE_JS_ERROR_SECTION,
         data: data,
     }; 
 }
 
 export function changeApiErrorSection(data) {
     return {
-        type: 'CHANGE_API_ERROR_SECTION',
+        type: ACTION_TYPE.CHANGE_API_ERROR_SECTION,
         data: data,
     }; 
 }
@@ -230,7 +232,7 @@ export function changeApiErrorSection(data) {
  */
 export function changeTopbar(data) {
     return {
-        type: 'CHANGE_TOPBAR',
+        type: ACTION_TYPE.CHANGE_TOPBAR,
         data: data,
     };
 }
