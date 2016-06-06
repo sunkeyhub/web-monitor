@@ -7,7 +7,7 @@
 module.exports = [
     {
         comment: '前端路由组',
-        name: 'Api',
+        namespace: 'Api',
         path: '/api',
         list: [
             {
@@ -20,7 +20,7 @@ module.exports = [
     },
     {
         comment: '后台管理路由组',
-        name: 'Admin',
+        namespace: 'Admin',
         path: '/admin',
         list: [
             {
