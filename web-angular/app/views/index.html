@@ -1,0 +1,31 @@
+<header class="g-header">
+	<div class="m-logo">
+		<span class="u-logo">
+			<img class="img" src="/static/img/xunlei.jpg"/>
+		</span>
+		<span class="text">手雷管理后台</span>
+	</div>
+</header>
+<div class="g-body">
+	<div class="g-aside">
+		<div class="m-menu">
+			<ul>
+				<li class="item">
+					<a ui-sref="index" class="menu-link" ng-class="" ng-click="changeMenu()">首页</a>
+				</li>
+				<li class="item">
+					<a ui-sref="index.configJson" class="menu-link" ng-class="" ng-click="changeMenu()">Json配置中心</a>
+				</li>
+				<li class="item">
+					<a ui-sref="index.configTest" class="menu-link" ng-class="" ng-click="changeMenu()">测试配置</a>
+				</li>
+			</ul>		
+		</div>
+	</div>
+	<div class="g-container">
+		<div class="g-content" ui-view></div>	
+	</div>
+</div>
+<footer class="g-footer">
+	
+</footer>

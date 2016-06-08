@@ -1,0 +1,100 @@
+@import "../../node_modules/bootstrap/less/bootstrap.less";
+
+@body-bg: #f9fafc;
+@primary-text-color: #666;
+
+html, body {
+	font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+}
+
+.g-header {
+	display: flex;
+	align-items: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	box-shadow: 0 2px 1px 1px rgba(0,0,0,0.1);
+	height: 50px;
+	background-color: #fff;
+	z-index: 100;
+
+	.m-logo {
+		margin-left: 30px;
+
+		.u-logo {
+			.img {
+				width: 40px;
+				hegiht: 40px;
+			}
+		}
+
+		.text {
+			color: @primary-text-color;
+			font-size: 18px;
+			padding-left: 15px;
+			font-weight: bold;
+		}
+	}
+}
+
+.g-body {
+	margin-top: 50px;
+
+	.g-aside {
+		position: fixed;
+		top: 50px;
+		left: 0;
+		bottom: 0;
+		width: 200px;
+		background-color: @brand-primary;
+
+		.m-menu ul {
+			list-style: none;
+			padding: 0 15px;
+			margin-top: 30px;
+
+			.menu-link {
+				display: block;
+				width: 100%;
+				height: 35px;
+				line-height: 35px;
+				text-decoration: none;
+				font-size: 14px;
+				color: darken(#fff, 5%);
+				text-align: center;
+				font-weight: bold;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+				&:hover {
+					color: #fff;
+					background-color: darken(@brand-primary, 5%);
+				}
+
+				&.active, &.active:hover {
+					color: #fff;
+					background-color: darken(@brand-primary, 10%);
+				}
+			}
+		}
+	}
+
+	.g-container {
+		position: absolute;
+		top: 50px;
+		left: 200px;
+		right: 0;
+		bottom: 0;
+		padding: 30px;
+		background-color: @body-bg;
+		overflow-y: auto;
+
+		.g-content {
+			padding: 15px;
+			background-color: #fff;
+			min-height: 600px;
+			width: 100%;
+			box-shadow: 0 0 1px 1px rgba(0,0,0,0.1);
+		}
+	}
+}
