@@ -12,9 +12,10 @@
     "angular": "^1.5.6",
     "angular-ui-router": "^0.3.1",
     "bootstrap": "^3.3.6",
+    "express": "^4.13.4",
     "jquery": "^2.2.4",
     "lodash": "^4.13.1",
     "requirejs": "^2.2.0",
-    "underscore": "^1.8.3",
+    "underscore": "^1.8.3"
   }
 }

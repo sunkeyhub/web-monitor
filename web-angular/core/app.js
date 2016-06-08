@@ -11,7 +11,7 @@ define(['angular', 'app/routes', 'uiRouter'], (angular, routes) => {
 	
 	app.asyncJs = (path) => {
 		return ['$q', ($q) => {
-			let defer = $q.defer();
+			const defer = $q.defer();
 			require([path], (loader) => {
 				defer.resolve();
 			});

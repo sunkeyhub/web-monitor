@@ -5,7 +5,9 @@
  */
 
 define(['core/app'], (app) => {
-	app.register.controller('controllers.configJson', function($scope) {
-		$scope.world = 'world'
+    app.register.controller('controllers.configJson', function($scope) {
+        $scope.world = 'world';
+
+        console.log('json');
 	});
 });

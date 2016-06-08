@@ -5,11 +5,9 @@
  */
 
 define(['core/app'], (app) => {
-	app.register.controller('controllers.index', function($scope) {
-		$scope.currentHash = location.hash;
+	app.register.controller('controllers.index', function($scope, $rootScope, $state) {
+        $scope.index = 'index';
 
-		$scope.changeMenu = () => {
-			$scope.currentHash = location.hash;
-		};
+        console.log('index');
 	});
 });
