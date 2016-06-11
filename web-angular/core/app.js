@@ -4,38 +4,29 @@
  * @author : Sunkey
  */
 
-define(['angular', 'app/routes', 'uiRouter'], (angular, routes) => {
-	const app = angular.module('app', [
-		'ui.router',
-	]);
-	
-	app.asyncJs = (path) => {
-		return ['$q', ($q) => {
-			const defer = $q.defer();
-			require([path], (loader) => {
-				defer.resolve();
+define(['angular', 'app/routes', 'angular-async-loader', 'angular-ui-router'],
+	(angular, routes, asyncLoader) => {
+		const app = angular.module('app', [
+			'ui.router',
+		]);
+
+		asyncLoader.configure(app);
+
+		app.config(($stateProvider,
+					$urlRouterProvider,
+					$locationProvider,
+					$httpProvider) => {
+			$locationProvider.html5Mode({
+				enabled: false,
 			});
 
-			return defer.promise;
-		}];
+			$httpProvider.defaults.headers.common = {
+				'content-type': 'application/json;charset=utf-8',
+			};
+
+			routes($stateProvider, $urlRouterProvider, app);
+		});
+
+		return app;
 	}
-
-	app.config(($stateProvider,
-				$urlRouterProvider,
-				$controllerProvider,
-				$compileProvider,
-				$filterProvider,
-				$provide) => {
-		app.register = {
-			controller: $controllerProvider.register,
-			directive: $compileProvider.directive,
-			filter: $filterProvider.register,
-			factory: $provide.factory,
-			service: $provide.service,
-		};
-
-		routes($stateProvider, $urlRouterProvider, app);
-	});
-
-	return app;
-});
+);

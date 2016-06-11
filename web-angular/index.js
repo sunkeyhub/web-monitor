@@ -11,7 +11,8 @@ const config = {
 	urlArgs: '_v=' + ver,
 	paths: {
 		angular: 'node_modules/angular/angular.min',
-		uiRouter: 'node_modules/angular-ui-router/release/angular-ui-router',
+		'angular-ui-router': 'node_modules/angular-ui-router/release/angular-ui-router',
+		'angular-async-loader': 'node_modules/angular-async-loader/angular-async-loader.min',
 		jquery: 'node_modules/jquery/dist/jquery.min',
 		underscore: 'node_modules/underscore/underscore-min',
 		bootstrap: 'node_modules/bootstrap/dist/js/bootstrap.min',
@@ -20,9 +21,9 @@ const config = {
 		angular: {
 			exports: 'angular',
 		},
-		uiRouter: {
+		'angular-ui-router': {
 			deps: ['angular'],
-			exports: 'uiRouter',
+			exports: 'angular-ui-router',
 		},
 	},
 };

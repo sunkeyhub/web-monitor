@@ -5,9 +5,7 @@
  */
 
 define(['core/app'], (app) => {
-	app.register.controller('controllers.configTest', function($scope) {
+	app.controller('controllers.configTest', function($scope) {
 		$scope.test = 'test';
-
-        console.log('test');
 	});
 });

@@ -4,10 +4,11 @@
  * @author : Sunkey
  */
 
-define(['core/app'], (app) => {
-	app.register.controller('controllers.index', function($scope, $rootScope, $state) {
-        $scope.index = 'index';
-
-        console.log('index');
-	});
+define(['core/app', 'app/services/session'], (app) => {
+	app.controller('controllers.index', ['$scope', 'service.session',
+        function($scope, sessionService) {
+          $scope.index = 'index';
+          console.log(sessionService.service);
+	   }
+    ]);
 });
