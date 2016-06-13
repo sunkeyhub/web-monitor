@@ -10,7 +10,7 @@ module.exports = {
 
     /* 数据库默认配置 */
     DB_DRIVER: 'mongo',
-    DB_HOST: '10.10.39.4',
+    DB_HOST: '127.0.0.1',
     DB_PORT: 27017,
     DB_USERNAME: '',
     DB_PASSWORD: '',
@@ -18,7 +18,7 @@ module.exports = {
 
     CACHE_DRIVER: 'redis',
     /* redis默认配置 */
-    REDIS_HOST: '10.10.39.4',
+    REDIS_HOST: '127.0.0.1',
     REDIS_PORT: 6379,
     REDIS_PASSWORD: null,
     REDIS_DB: 1,
@@ -29,6 +29,6 @@ module.exports = {
     MAIL_USERNAME: 'sunkey@163.com',
     MAIL_PASSWORD: '123456',
 
-    WX_APP_ID: 'wxfee9680208019a47',
-    WX_APP_SECRET: '9db1a166af5d0a392bdd4d1707e50618',
+    WX_APP_ID: '',
+    WX_APP_SECRET: '',
 };
