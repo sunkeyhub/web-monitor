@@ -11,7 +11,7 @@ module.exports = {
     /* 数据库默认配置 */
     DB_DRIVER: 'mongo',
     DB_HOST: '127.0.0.1',
-    DB_PORT: 27017,
+    DB_PORT: 29019,
     DB_USERNAME: '',
     DB_PASSWORD: '',
     DB_DATABASE: 'jedi_monitor',
@@ -20,7 +20,7 @@ module.exports = {
     /* redis默认配置 */
     REDIS_HOST: '127.0.0.1',
     REDIS_PORT: 6379,
-    REDIS_PASSWORD: null,
+    REDIS_PASSWORD: 'redis',
     REDIS_DB: 1,
 
     /* 邮件默认配置 */

@@ -5,6 +5,9 @@
  */
 var express = require('express');
 var app = express();
+app.use(express.static('./'));
+app.listen(8001);
+/*
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var webpackConfig = require('./webpack-hot-dev-server.config');
@@ -26,3 +29,4 @@ new WebpackDevServer(webpack(webpackConfig), {
         console.log('WebpackDevServer starting...');
     }
 });
+*/

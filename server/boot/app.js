@@ -8,6 +8,8 @@ var express = require('express');
 var _ = require('lodash');
 var co = require('co');
 var requestIp = require('request-ip');
+var bluebird = require('bluebird');
+var redis = require('redis');
 
 function App() {
     var pub = this;
@@ -87,7 +89,26 @@ function App() {
      */
     pri.initCache = function initCache() {
         var cacheConfig = require(GLB.CONS.CONFIG_PATH + '/cache');
-        var cache = null;
+        if (!cacheConfig.driver) {
+            return false;
+        }
+        var driverConfig = cacheConfig['connections'][cacheConfig.driver];
+
+        redisConfig = _.pickBy(driverConfig, (val) => {return val;});
+
+        bluebird.promisifyAll(redis.RedisClient.prototype);
+        bluebird.promisifyAll(redis.Multi.prototype);
+
+        var cache = redis.createClient(redisConfig);
+
+        cache.on('error', (err) => {
+            GLB.app.logger.error(err);
+        });
+
+        cache.on('ready', (err) => {
+            GLB.app.logger.info('redis is ready.');
+        });
+
 
         pub.cache = cache;
     }
