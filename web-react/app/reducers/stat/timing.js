@@ -1,19 +1,22 @@
 /**
- * Js 报错分析数据 reducer
+ * 性能分析数据reducer
  *
  * @author : Sunkey
  */
+
+import * as ACTION_TYPE from '../../constants/ACTION_TYPE';
 
 var initialState = {
     factorKey: '-', 
     factorList: [],
     trend: {},
-    infoList: [],
+    period: {},
+    performance: {},
 };
 
-export default function jsError(state=initialState, action) {
+export default function timing(state=initialState, action) {
     switch (action.type) {
-        case 'INIT_FACTOR_LIST': {
+        case ACTION_TYPE.INIT_FACTOR_LIST: {
             if (action.data.code == 200) {
                 var factorList = action.data.data;
                 if (factorList.length > 0) {
@@ -22,16 +25,13 @@ export default function jsError(state=initialState, action) {
                 }
             }
         }
-        case 'UPDATE_JS_ERROR_SECTION': {
+        case ACTION_TYPE.UPDATE_TIMING_SECTION: {
             if (action.data.code == 200) {
                 return Object.assign({}, state, action.data.data);
             }
         }
-        case 'CHANGE_JS_ERROR_SECTION': {
+        case ACTION_TYPE.CHANGE_TIMING_SECTION: {
             return Object.assign({}, state, action.data);
-        }
-        case 'UPDATE_JS_ERROR_INFO_LIST': {
-            return Object.assign({}, state, {infoList: action.data.data});
         }
     }
 

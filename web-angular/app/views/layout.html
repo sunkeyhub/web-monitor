@@ -1,0 +1,38 @@
+<header class="g-header">
+	<div class="m-logo">
+		<span class="u-logo">
+			<img class="img" src="/static/img/xunlei.jpg"/>
+		</span>
+		<span class="text">手雷管理后台</span>
+	</div>
+	<div class="m-user">
+		<ul>
+			<li class="name"><a href="">Sunkey</a></li> |
+			<li class="logout"><a href="">退出</a></li>
+		</ul>
+	</div>
+</header>
+
+<div class="g-main">
+	<div class="g-sidebar">
+		<div class="m-menu">
+			<ul>
+				<li class="item" ng-class="{true: 'active'}[currentState=='admin.index']">
+					<a ui-sref="admin.index" class="menu-link">首页</a>
+				</li>
+				<li class="item" ng-class="{true: 'active'}[currentState=='admin.configJson']">
+					<a ui-sref="admin.configJson" class="menu-link">Json 配置中心</a>
+				</li>
+				<li class="item" ng-class="{true: 'active'}[currentState=='admin.configTest']">
+					<a ui-sref="admin.configTest" class="menu-link">测试配置</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="g-container">
+		<div class="g-content" id="g-content" ng-style="{'min-height': minContentHeight}" ui-view></div>	
+	</div>
+</div>
+
+<footer class="g-footer">
+</footer>

@@ -4,6 +4,8 @@
  * @author : Sunkey
  */
 
+import * as ACTION_TYPE from '../../constants/ACTION_TYPE';
+
 var initialState = {
     visit: {
         pv: 0,
@@ -22,7 +24,7 @@ var initialState = {
 
 export default function overview(state=initialState, action) {
     switch (action.type) {
-        case 'UPDATE_OVERVIEW_SECTION': {
+        case ACTION_TYPE.UPDATE_OVERVIEW_SECTION: {
             var data = action.data;
             if (data.code == 200) {
                 var resData = data.data;
