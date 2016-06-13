@@ -28,7 +28,7 @@ function ReportController() {
     pub.before = function before() {
         var query = pub.request.query.q;
         if (!query) {
-            GLB.app.logger.error('缺少上报参数q | ' + self.request.url);
+            GLB.app.logger.error('缺少上报参数q | ' + pub.request.url);
             return pub.response.jsonp({code: 400, msg: '缺少上报参数q'});
         } else {
             try {
