@@ -42,14 +42,4 @@ _.under2camel = function(obj) {
 	return camelObj;
 }
 
-// 是否是生成器判断
-_.isGenerator = function(obj) {
-	return obj && obj.prototype && obj.prototype.toString() === '[object Generator]' ? true : false;
-}
-
-// 是否是某构造器的实例
-_.isInstance = function(obj, constructor) {
-	return obj instanceof constructor ? true : false;
-}
-
 global.moment = require('moment');

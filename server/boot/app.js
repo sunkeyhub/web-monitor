@@ -4,68 +4,55 @@
  * @author : Sunkey
  */
 
-const express = require('express');
-const requestIp = require('request-ip');
-const bluebird = require('bluebird');
-const fs = require('fs');
-const redis = require('redis');
-const mongoose = require('mongoose');
-const log4js = require('log4js');
+var express = require('express');
+var _ = require('lodash');
+var co = require('co');
+var requestIp = require('request-ip');
 
-const logConfig = require(GLB.CONS.CONFIG_PATH + '/log');
-const dbConfig = require(GLB.CONS.CONFIG_PATH + '/database');
-const cacheConfig = require(GLB.CONS.CONFIG_PATH + '/cache');
-const routesConfig = require(GLB.CONS.ROOT_PATH + '/app/Http/routes');
-const appConfig = require(GLB.CONS.CONFIG_PATH + '/app');
+function App() {
+    var pub = this;
+    var pri = {};
 
-// 定义私有变量名
-const app = Symbol('VAL.app');
-const inited = Symbol('VAL.inited');
+    // app对象
+    pri.app = express();
+    // 初始化标记
+    pri.inited = false;
+    // 日志对象
+    pub.logger = null; 
+    // db对象
+    pub.db = null;
+    // 缓存对象
+    pub.cache = null;
 
-// 定义私有函数名
-const initMiddleware = Symbol('FUNC.initMiddleware');
-const initLog = Symbol('FUNC.initLog');
-const initDatabase = Symbol('FUNC.initDatabase');
-const initCache = Symbol('FUNC.initCache');
-const initRoute = Symbol('FUNC.initRoute');
-const init = Symbol('FUNC.init');
-
-class App {
-    constructor() {
-        this[app]  = express();
-        this[inited] = false;
-        this.logger = null;
-        this.db = null;
-        this.cache = null;
+    /**
+     * 初始化中间件
+     */
+    pri.initMiddleware = function initMiddleware() {
+        // ip 中间件，为 request 注入 clientIp 变量
+        pri.app.use(requestIp.mw());
     }
 
     /**
      * 初始化日志
      */
-    [initLog]() {
-        log4js.configure(logConfig);
-        this.logger = log4js.getLogger(logConfig.appenders[0].category);
-    }
+    pri.initLog = function initLog() {
+        var log4js = require('log4js');
+        var logConfig = require(GLB.CONS.CONFIG_PATH + '/log');
 
-    /**
-     * 初始化中间件
-     */
-    [initMiddleware]() {
-        // ip 中间件，为 request 注入 clientIp 变量
-        this[app].use(requestIp.mw());
+        log4js.configure(logConfig);
+
+        pub.logger = log4js.getLogger(logConfig.appenders[0].category);
     }
 
     /**
      * 初始化数据库
      */
-    [initDatabase]() {
-        if (!dbConfig.driver) {
-            return false;
-        }
-
-        const mongoConfig = dbConfig['connections']['mongo'];
-        const dsn = 'mongodb://' + mongoConfig.host + ':' + mongoConfig.port + '/' + mongoConfig.db;
-        let options = {
+    pri.initDatabase = function initDatabase() {
+        var mongoose = require('mongoose');
+        var dbConfig = require(GLB.CONS.CONFIG_PATH + '/database');
+        var mongoConfig = dbConfig['connections']['mongo'];
+        var dsn = 'mongodb://' + mongoConfig.host + ':' + mongoConfig.port + '/' + mongoConfig.db;
+        var options = {
             server: mongoConfig.server
         };
 
@@ -76,187 +63,143 @@ class App {
 
         mongoose.connect(dsn, options);
 
-        this.db = mongoose.connection;
+        pub.db = mongoose.connection;
 
-        this.db.on('connected', function() {
-            this.logger.info('success connected to ' + dsn);
+        pub.db.on('connected', function() {
+            console.log('success connected to ' + dsn);
         });
 
-        this.db.on('disconnected', function() {
-            this.logger.info('disconnected to ' + dsn);
+        pub.db.on('disconnected', function() {
+            console.log('disconnected to ' + dsn);
         });
 
-        this.db.on('reconnected', function() {
-            this.logger.info('reconnected to ' + dsn);
+        pub.db.on('reconnected', function() {
+            console.log('reconnected to ' + dsn);
         });
 
-        this.db.on('error', function() {
-            this.logger.error('error connected to ' + dsn);
-        });
+        pub.db.on('error', function() {
+            console.log('error connected to ' + dsn);
+        })
     }
 
     /**
      * 初始化缓存
      */
-    [initCache]() {
-        if (!cacheConfig.driver) {
-            return false;
-        }
+    pri.initCache = function initCache() {
+        var cacheConfig = require(GLB.CONS.CONFIG_PATH + '/cache');
+        var cache = null;
 
-        const redisConfig = cacheConfig['connections']['redis'];
-
-        bluebird.promisifyAll(redis.RedisClient.prototype);
-        bluebird.promisifyAll(redis.Multi.prototype);
-
-        this.cache = redis.createClient(redisConfig);
-
-        this.cache.on('error', function(err) {
-            this.logger.error(err);
-        });
+        pub.cache = cache;
     }
 
     /**
      * 初始化路由
      */
-    [initRoute]() {
-        _.forEach(routesConfig, (group) => {
-            _.forEach(group.list, (route) => {
-                const path = group.path + route.path;
-                const namespace = group.namespace;
-                const method = route.method.toLowerCase();
+    pri.initRoute = function initRoute() {
+        var routes = require(GLB.CONS.ROOT_PATH + '/app/Http/routes');
+        var fs = require('fs');
 
-                this[app][method](path, (req, res, next) => {
-                    const routeParam = route.route.split('@');
-                    const controllerName = routeParam[0];
-                    const methodName = routeParam[1];
-                    const controllerPath = [
-                        GLB.CONS.CONTROLLER_PATH,
-                        namespace,
-                        controllerName,
-                    ].join('/');
+        _.each(routes, function(group) {
+            _.each(group.list, function(route) {
+                var path = group.path + route.path;
+                var groupName = group.name;
 
-                    fs.exists(controllerPath + '.js', (exists) => {
-                        if (!exists) {
-                            return res.status(404).end('Controller not exists.');
-                        } else {
-                            const controller = require(controllerPath);
+                // 避免循环闭包引用问题
+                (function(groupName, path, route) {
+                    var method = route.method.toLowerCase();
 
-                            if (!_.isFunction(controller.init)) {
-                                return res.end('route init error');
-                            }
+                    pri.app[method](path, function(req, res, next) {
+                        var routeParam = route.route.split('@');
+                        var controllerName = routeParam[0];
+                        var methodName = routeParam[1];
+                        var controllerPath = [
+                            GLB.CONS.CONTROLLER_PATH,
+                            groupName,
+                            controllerName,
+                        ].join('/');
 
-                            controller.init(req, res, next);
+                        fs.exists(controllerPath + '.js', function(exists) {
+                            if (!exists) {
+                                return res.status(404).end('Controller not exists.');
+                            } else {
+                                var controller = require(controllerPath);
+                                if (!_.isFunction(controller.init)) {
+                                    return res.end('route init error');
+                                }
 
-                            return co(function *() {
-                                let beforeRt = undefined;
-                                let methodRt = undefined;
-                                let afterRt = undefined;
+                                return co(function *() {
+                                    controller.init(req, res, next);
 
-                                if (_.isGenerator(controller.before)) {
-                                    try {
-                                        beforeRt = yield co(controller.before);
-                                    } catch (err) {
-                                        this.logger.error(err);
-                                    }
-                                } else if (_.isFunction(controller.before)) {
-                                    beforeRt = controller.before(); 
-                                    if (_.isInstance(beforeRt, Promise)) {
-                                        try {
+                                    if (_.isFunction(controller.before)) {
+                                        var beforeRt = controller.before(); 
+                                        if (beforeRt instanceof Promise) {
                                             beforeRt = yield beforeRt; 
-                                        } catch (err) {
-                                            this.logger.error(err);
+                                        }
+                                        // 如果返回的不是undefined, 则说明提前终止了请求
+                                        if (!_.isUndefined(beforeRt)) {
+                                            return beforeRt;
                                         }
                                     }
-                                }
-                                // 如果返回的不是undefined, 则说明提前终止了请求
-                                if (!_.isUndefined(beforeRt)) {
-                                    return beforeRt;
-                                }
 
-                                if (_.isGenerator(controller[methodName])) {
-                                    try {
-                                        methodRt = yield co(controller[methodName].bind(controller));
-                                    } catch (err) {
-                                        this.logger.error(err);
-                                    }
-                                } else if (_.isFunction(controller[methodName])) {
-                                    methodRt = controller[methodName]();
-                                    if (_.isInstance(methodRt, Promise)) {
-                                        try {
+                                    if (_.isFunction(controller[methodName])) {
+                                        var methodRt = controller[methodName]();
+                                        if (methodRt instanceof Promise) {
                                             methodRt = yield methodRt;
-                                        } catch (err) {
-                                            this.logger.error(err);
+                                        }
+                                        // 如果返回的不是undefined, 则说明提前终止了请求
+                                        if (!_.isUndefined(methodRt)) {
+                                            return methodRt;
                                         }
                                     }
-                                }
-                                // 如果返回的不是undefined, 则说明提前终止了请求
-                                if (!_.isUndefined(methodRt)) {
-                                    return methodRt;
-                                }
 
-                                if (_.isGenerator(controller.after)) {
-                                    try {
-                                        afterRt = yield co(controller.after);
-                                    } catch (err) {
-                                        this.logger.error(err);
-                                    }
-                                } else if (_.isFunction(controller.after)) {
-                                    afterRt = controller.after();
-                                    if (_.isInstance(afterRt, Promise)) {
-                                        try {
+                                    if (_.isFunction(controller.after)) {
+                                        var afterRt = yield controller.after();
+                                        if (afterRt instanceof Promise) {
                                             afterRt = yield afterRt; 
-                                        } catch (err) {
-                                            this.logger.error(err);
+                                        }
+                                        // 如果返回的不是undefined, 则说明提前终止了请求
+                                        if (!_.isUndefined(afterRt)) {
+                                            return afterRt;
                                         }
                                     }
-                                }
-                                // 如果返回的不是undefined, 则说明提前终止了请求
-                                if (!_.isUndefined(afterRt)) {
-                                    return afterRt;
-                                }
 
-                                res.end();
-                            }.bind(this)).then(() => {
-                                console.log('route success');
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                            });
-                        }
+                                    res.end();
+                                });
+                            }
+                        });
                     });
-                });
+                })(groupName, path, route);
             });
-        });
-
-        this[app].get('*', function(req, res) {
-            res.redirect('/welcome/index');
         });
     }
 
     /**
      * 初始化应用
      */
-    [init]() {
-        if (!!this[inited]) {
+    pri.init = function init() {
+        if (!!pri.inited) {
             return false;
         }
 
-        this[initLog]();
-        this[initMiddleware]();
-        this[initDatabase]();
-        this[initCache]();
-        this[initRoute]();
+        pri.initMiddleware();
+        pri.initLog();
+        pri.initDatabase();
+        pri.initCache();
+        pri.initRoute();
 
-        this[inited] = true;
+        pri.inited = true;
     }
 
     /**
      * APP运行接口
      */
-    run() {
+    pub.run = function run() {
+        var appConfig = require(GLB.CONS.CONFIG_PATH + '/app');
+
         // 初始化
-        this[init]();
-        this[app].listen(appConfig.port);
+        pri.init();
+
+        pri.app.listen(appConfig.port);
 
         console.log('Server listen on ' + appConfig.port);
     }
