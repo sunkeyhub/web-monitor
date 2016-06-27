@@ -5,6 +5,6 @@
  */
 
 export default {
-    hostname: '127.0.0.1',
+    hostname: '10.10.39.4',
     port: 8002,
 };
