@@ -726,14 +726,14 @@ function Report() {
                         var docs = yield pri.reportJsErrorModel.aggregate(pipeline).exec();
                         var result = {};
                         _.forEach(docs, function(item) {
-                            var pageId = item.page_id;
+                            var pageUrl = item.page_url;
                             
-                            _.unset(item, 'page_id');
+                            _.unset(item, 'page_url');
                             if (_.isArray(factor)) {
-                                _.isUndefined(result[pageId]) && _.set(result, `${pageId}.${key}`, []);
-                                result[pageId][key].push(item);
+                                _.isUndefined(result[pageUrl]) && _.set(result, `${pageUrl}.${key}`, []);
+                                result[pageUrl][key].push(item);
                             } else {
-                                result[pageId] = item;
+                                result[pageUrl] = item;
                             }
                         });
 
@@ -764,17 +764,17 @@ function Report() {
 
                 var dateString = moment(pri.startDate).format('YYYY-MM-DD');
                 var upsertPromiseList = [];
-                for(var pageId in reduceResult) {
+                for(var pageUrl in reduceResult) {
                     var condition = {
-                        page_id: +pageId, 
+                        page_url: pageUrl, 
                         data_string: dateString,
                     }; 
                     var option = {
                         upsert: true,
                     };
 
-                    var pageItem = reduceResult[pageId];
-                    pageItem['page_id'] = +pageId;
+                    var pageItem = reduceResult[pageUrl];
+                    pageItem['page_url'] = pageUrl;
                     pageItem['date_string'] = dateString;
                     pageItem['created_time'] = new Date();
 
