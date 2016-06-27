@@ -765,6 +765,7 @@ function Report() {
                 var dateString = moment(pri.startDate).format('YYYY-MM-DD');
                 var upsertPromiseList = [];
                 for(var pageUrl in reduceResult) {
+                    pageUrl = _.base64Decode(pageUrl);
                     var condition = {
                         page_url: pageUrl, 
                         data_string: dateString,
