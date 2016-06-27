@@ -120,7 +120,7 @@ function App() {
             process.exit(1);
         }
 
-        var job = require(GLB.CONS.JOB_PATH + '/' + jobName);
+        var job = require(GLB.CONS.JOB_PATH + '/' + jobConfig[jobName]);
 
         job.run(process.argv.slice(3));
     }
