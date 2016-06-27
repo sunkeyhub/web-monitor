@@ -765,9 +765,8 @@ function Report() {
                 var dateString = moment(pri.startDate).format('YYYY-MM-DD');
                 var upsertPromiseList = [];
                 for(var pageUrl in reduceResult) {
-                    pageUrl = _.base64Decode(pageUrl);
                     var condition = {
-                        page_url: pageUrl, 
+                        page_url: _.base64Decode(pageUrl), 
                         data_string: dateString,
                     }; 
                     var option = {
@@ -775,7 +774,7 @@ function Report() {
                     };
 
                     var pageItem = reduceResult[pageUrl];
-                    pageItem['page_url'] = pageUrl;
+                    pageItem['page_url'] = _.base64Decode(pageUrl);
                     pageItem['date_string'] = dateString;
                     pageItem['created_time'] = new Date();
 
