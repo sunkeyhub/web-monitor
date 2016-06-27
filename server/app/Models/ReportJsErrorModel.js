@@ -16,8 +16,8 @@ var reportJsErrorSchema = new Schema({
         type: String,
         required: true,
     },
-    page_id: {
-        type: Number,
+    page_url: {
+        type: String,
         required: true,
     },
     channel_id: {

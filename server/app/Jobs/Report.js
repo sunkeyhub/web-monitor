@@ -678,7 +678,7 @@ function Report() {
                     },
                     {
                         $project: {
-                            page_id: 1,
+                            page_url: 1,
                             msg: 1,
                             file: 1,
                             created_time: 1,
@@ -687,7 +687,7 @@ function Report() {
                     {
                         $group: {
                             _id: {
-                                page_id: '$page_id',
+                                page_url: '$page_url',
                                 msg: '$msg',
                                 file_path: '$file.path',
                                 file_line: '$file.line',
@@ -704,7 +704,7 @@ function Report() {
                     {
                         $project: {
                             _id: 0,
-                            page_id: '$_id.page_id',
+                            page_url: '$_id.page_url',
                             msg: '$_id.msg',
                             file: {
                                 path: '$_id.file_path',

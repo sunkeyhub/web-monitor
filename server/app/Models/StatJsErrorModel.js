@@ -8,8 +8,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var statJsErrorSchema = new Schema({
-    page_id: {
-        type: Number,
+    page_url: {
+        type: String,
         required: true,
     },
     os_full: [{
