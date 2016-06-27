@@ -42,4 +42,14 @@ _.under2camel = function(obj) {
 	return camelObj;
 }
 
+_.base64Encode = function(str) {
+	var buffer = new Buffer(str);
+	return buffer.toString('base64');
+}
+
+_.base64Decode = function(base64Str) {
+	var buffer = new Buffer(base64Str, 'base64');
+	return buffer.toString();
+}
+
 global.moment = require('moment');

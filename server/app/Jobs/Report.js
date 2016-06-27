@@ -726,7 +726,7 @@ function Report() {
                         var docs = yield pri.reportJsErrorModel.aggregate(pipeline).exec();
                         var result = {};
                         _.forEach(docs, function(item) {
-                            var pageUrl = item.page_url;
+                            var pageUrl = _.base64Encode(item.page_url);
                             
                             _.unset(item, 'page_url');
                             if (_.isArray(factor)) {
